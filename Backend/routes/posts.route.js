@@ -90,7 +90,15 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
     // GET /posts/admin - ดึงโพสต์ทั้งหมด (รวมโพสต์ที่ไม่ active)
     .get("/admin", async () => {
         const posts = await prisma.posts.findMany({
-            include : { category : true }
+            include : {
+                category : true,
+                users_posts_user_idTousers: {
+                    select: {
+                        id: true,
+                        username: true,
+                    }
+                },
+            }
         })
 
         if(!posts) throw new Error("ไม่สามารถเรียกข้อมูลได้");

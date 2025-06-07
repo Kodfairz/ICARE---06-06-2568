@@ -15,6 +15,9 @@ import {
 } from "@tanstack/react-table";
 // นำเข้า React Table API สำหรับสร้างตารางแบบยืดหยุ่นและรองรับ pagination
 
+import Cookies from "js-cookie";
+// นำเข้า js-cookie สำหรับจัดการ cookie
+
 import axios from "axios";
 // นำเข้า axios สำหรับเรียก API
 
@@ -46,17 +49,45 @@ export default function BlogManagement() {
   const router = useRouter();
   // ใช้สำหรับเปลี่ยนหน้า
 
+  const [userId, setUserId] = useState(null);
+  // สถานะเก็บ id ของผู้ใช้ที่ล็อกอินอยู่
+
   const [posts, setPosts] = useState([]);
   // สถานะเก็บข้อมูลโพสต์ที่ดึงมาจาก API
 
-  // สถานะควบคุมการเปิด/ปิด modal ยืนยันการลบ
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // สถานะควบคุมการเปิด/ปิด modal ยืนยันการลบ
+
+  const [isLoading, setIsLoading] = useState(true);
 
   // เก็บ id ของโพสต์ที่ต้องการลบ
   const [postIdToDelete, setPostIdToDelete] = useState(null);
 
+  useEffect(() => {
+    const fetchUserId = async () => {
+      setIsLoading(true);
+      const cookie = Cookies.get("user");
+
+      if (cookie) {
+        try {
+          const parsed = JSON.parse(cookie);
+          setUserId(parsed.id);
+        } catch (e) {
+          console.error("Error parsing cookie:", e);
+          toast.error("เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้");
+        }
+      } else {
+        toast.error("ไม่พบข้อมูลผู้ใช้ใน cookie");
+      }
+      setIsLoading(false);
+    };
+
+    fetchUserId();
+  }, []);
+
   // ฟังก์ชันดึงข้อมูลโพสต์จาก API
   const getPosts = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${API}/posts/admin`);
       setPosts(response.data.resultData); // เก็บข้อมูลโพสต์ลง state
@@ -64,7 +95,15 @@ export default function BlogManagement() {
       console.log(error);
       toast.error(error.response.message || "ไม่สามารถเรียกข้อมูลได้"); // แจ้งเตือนถ้าดึงข้อมูลไม่สำเร็จ
     }
+    setIsLoading(false);
   };
+
+  // ดึงข้อมูลโพสต์ครั้งแรกตอน component โหลด
+  useEffect(() => {
+    if (userId) {
+      getPosts();
+    }
+  }, [userId]);
 
   // ฟังก์ชันเปลี่ยนสถานะเปิด/ปิดโพสต์ (isActive)
   const changeStatus = async (id, status) => {
@@ -94,11 +133,6 @@ export default function BlogManagement() {
       toast.error(error.response.message || "ไม่สามารถลบข้อมูลได้");
     }
   };
-
-  // ดึงข้อมูลโพสต์ครั้งแรกตอน component โหลด
-  useEffect(() => {
-    getPosts();
-  }, []);
 
   // กำหนดคอลัมน์สำหรับตาราง โดยใช้ useMemo เพื่อประสิทธิภาพไม่ให้สร้างใหม่ทุกครั้งที่ render
   const columns = useMemo(
@@ -154,6 +188,15 @@ export default function BlogManagement() {
         ),
       },
       {
+        header: "โพสต์โดย",
+        cell: ({ row }) => (
+          <>
+            {/* แสดงชื่อคนที่โพสต์" */}
+            <p>{row.original.users_posts_user_idTousers.username}</p>
+          </>
+        ),
+      },
+      {
         header: "สถานะ",
         cell: ({ row }) => (
           <>
@@ -177,33 +220,47 @@ export default function BlogManagement() {
       },
       {
         header: "จัดการ",
-        cell: ({ row }) => (
-          <div className="flex gap-2">
-            {/* ปุ่มแก้ไข ใช้ router.push เปลี่ยนหน้าไปหน้าแก้ไขโพสต์ */}
-            <button
-              onClick={() =>
-                router.push(`/admin/dashboard/edit-post/${row.original.id}`)
-              }
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-            >
-              แก้ไข
-            </button>
+        cell: ({ row }) => {
+          const isDisabled = row.original.user_id !== userId;
 
-            {/* ปุ่มลบ เปิด modal ยืนยันการลบและตั้งค่า postIdToDelete */}
-            <button
-              onClick={() => {
-                setPostIdToDelete(row.original.id);
-                setIsModalOpen(true);
-              }}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-            >
-              ลบ
-            </button>
-          </div>
-        ),
+          return (
+            <div className="flex gap-2">
+              {/* ปุ่มแก้ไข */}
+              <button
+                onClick={() =>
+                  router.push(`/admin/dashboard/edit-post/${row.original.id}`)
+                }
+                disabled={isDisabled}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isDisabled
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-orange-500 hover:bg-orange-600"
+                }`}
+              >
+                แก้ไข
+              </button>
+
+              {/* ปุ่มลบ */}
+              <button
+                onClick={() => {
+                  setPostIdToDelete(row.original.id);
+                  setIsModalOpen(true);
+                }}
+                disabled={isDisabled}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isDisabled
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-red-500 hover:bg-red-600"
+                }`}
+              >
+                ลบ
+              </button>
+            </div>
+          );
+        },
       },
     ],
-    [router]
+    [router, userId]
   );
 
   // สร้าง instance ของ React Table โดยกำหนดข้อมูลและคอลัมน์ พร้อมเปิดใช้งาน pagination
@@ -214,6 +271,18 @@ export default function BlogManagement() {
     getPaginationRowModel: getPaginationRowModel(),
     initialState: { pagination: { pageSize: 10 } }, // แสดง 10 แถวต่อหน้า
   });
+
+  // ถ้ายังโหลดข้อมูลอยู่ แสดง UI สำหรับ loading
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+          <p className="text-gray-600 text-lg">กำลังโหลดข้อมูล...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
