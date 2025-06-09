@@ -7,13 +7,13 @@ import { useState } from "react";
 // คอมโพเนนต์ AddBlogCategory รับ props 2 ตัว คือ onClose สำหรับปิดโมดอล และ onSubmit สำหรับส่งข้อมูลประเภทบล็อกใหม่
 export default function AddBlogCategory({ onClose, onSubmit }) {
     // กำหนดสถานะใหม่ newBlog เป็น object ที่มี key name เริ่มต้นเป็นสตริงว่าง
-    const [newBlog, setNewBlog] = useState({ name: "" });
+    const [newBlog, setNewBlog] = useState({ CategoryName: "" });
 
     // ฟังก์ชัน handleSubmit ถูกเรียกตอนฟอร์มถูกส่ง (submit)
     const handleSubmit = (event) => {
         event.preventDefault(); // ป้องกันไม่ให้โหลดหน้าใหม่เมื่อส่งฟอร์ม
         onSubmit(newBlog);      // เรียกฟังก์ชัน onSubmit ที่รับเข้ามา พร้อมส่งข้อมูลประเภทบล็อกใหม่
-        setNewBlog({ name: ""}); // เคลียร์ค่า input ให้ว่างหลังส่งข้อมูล
+        setNewBlog({ CategoryName: ""}); // เคลียร์ค่า input ให้ว่างหลังส่งข้อมูล
     };
 
     return (
@@ -40,8 +40,8 @@ export default function AddBlogCategory({ onClose, onSubmit }) {
                     <input
                         type="text"
                         placeholder="ชื่อประเภทข้อมูล"
-                        value={newBlog.name} // กำหนดค่า input ตามสถานะ newBlog.name
-                        onChange={(e) => setNewBlog({ ...newBlog, name: e.target.value })} // อัปเดตสถานะเมื่อพิมพ์
+                        value={newBlog.CategoryName} // กำหนดค่า input ตามสถานะ newBlog.name
+                        onChange={(e) => setNewBlog({ ...newBlog, CategoryName: e.target.value })} // อัปเดตสถานะเมื่อพิมพ์
                         required
                         className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                     />

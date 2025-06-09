@@ -20,7 +20,7 @@ export const categoryRoutes = new Elysia({ prefix : "/category" })
         // ตรวจสอบว่ามีชื่อซ้ำในระบบหรือไม่
         const category = await prisma.categories.findFirst({
             where : {
-                CategoryName : body.name
+                CategoryName : body.CategoryName
             }
         })
 
@@ -31,7 +31,7 @@ export const categoryRoutes = new Elysia({ prefix : "/category" })
         // สร้างข้อมูล category ใหม่
         const newCategory = await prisma.categories.create({
             data : {
-                CategoryName : body.name
+                CategoryName : body.CategoryName
             }
         })
         
@@ -63,7 +63,7 @@ export const categoryRoutes = new Elysia({ prefix : "/category" })
                 CategoryID : Number(params.id),
             },
             data : {
-                CategoryName : body.name
+                CategoryName : body.CategoryName
             }
         })
 

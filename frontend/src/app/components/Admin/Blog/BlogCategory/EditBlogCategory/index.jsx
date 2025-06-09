@@ -16,13 +16,13 @@ import { API } from "../../../../../service/api";
 // id - ไอดีประเภทข้อมูลที่ต้องการแก้ไข
 export default function EditBlogCategory({ onClose, onSubmit, id }) {
     // สถานะ editBlog เก็บข้อมูลประเภทข้อมูลที่จะแก้ไข (มีแค่ชื่อ)
-    const [editBlog, setEditBlog] = useState({ name: "" });
+    const [editBlog, setEditBlog] = useState({ CategoryName: "" });
 
     // ฟังก์ชันจัดการการส่งฟอร์ม
     const handleSubmit = (event) => {
         event.preventDefault(); // ป้องกันโหลดหน้าใหม่เมื่อส่งฟอร์ม
         onSubmit(editBlog);     // เรียกส่งข้อมูลใหม่ไปยังฟังก์ชัน onSubmit ที่รับมาจากพาเรนต์
-        setEditBlog({ name: ""}); // เคลียร์ฟิลด์ข้อมูลหลังส่ง (อาจจะเลือกไม่เคลียร์ก็ได้ถ้าต้องการเก็บค่าไว้)
+        setEditBlog({ CategoryName: ""}); // เคลียร์ฟิลด์ข้อมูลหลังส่ง (อาจจะเลือกไม่เคลียร์ก็ได้ถ้าต้องการเก็บค่าไว้)
     };
 
     // ฟังก์ชันเรียก API เพื่อดึงข้อมูลประเภทบล็อกที่จะแก้ไขตาม id
@@ -67,8 +67,8 @@ export default function EditBlogCategory({ onClose, onSubmit, id }) {
                     <input
                         type="text"
                         placeholder="ชื่อประเภทข้อมูล"
-                        value={editBlog.name} // ค่า input มาจากสถานะ editBlog.name
-                        onChange={(e) => setEditBlog({ ...editBlog, name: e.target.value })} // อัปเดตสถานะเมื่อพิมพ์
+                        value={editBlog.CategoryName} // ค่า input มาจากสถานะ editBlog.name
+                        onChange={(e) => setEditBlog({ ...editBlog, CategoryName: e.target.value })} // อัปเดตสถานะเมื่อพิมพ์
                         required
                         className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                     />

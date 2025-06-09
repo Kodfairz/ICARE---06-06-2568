@@ -53,7 +53,7 @@ export default function CategoryBlog() {
   const addCategory = async (input) => {
     try {
       const response = await axios.post(`${API}/category/`, {
-        name: input.name,
+        CategoryName: input.CategoryName,
       });
       toast.success(response.data.message); // แจ้งเตือนสำเร็จ
       getCategory(); // ดึงข้อมูลใหม่เพื่ออัปเดตตาราง
@@ -68,7 +68,7 @@ export default function CategoryBlog() {
   const editCategory = async (input) => {
     try {
       const response = await axios.put(`${API}/category/${Id}`, {
-        name: input.name,
+        CategoryName: input.CategoryName,
       });
       toast.success(response.data.message); // แจ้งเตือนสำเร็จ
       setIsModalOpenEdit(false); // ปิด modal แก้ไข
@@ -100,8 +100,8 @@ export default function CategoryBlog() {
   // กำหนดคอลัมน์สำหรับตาราง โดยใช้ useMemo เพื่อไม่ให้คอลัมน์สร้างซ้ำทุกเรนเดอร์
   const columns = useMemo(
     () => [
-      { header: "ไอดี", accessorKey: "id" }, // คอลัมน์ id
-      { header: "ชื่อ", accessorKey: "name" }, // คอลัมน์ชื่อประเภท
+      { header: "ไอดี", accessorKey: "CategoryID" }, // คอลัมน์ id
+      { header: "ชื่อ", accessorKey: "CategoryName" }, // คอลัมน์ชื่อประเภท
       {
         header: "เครื่องมือ",
         id: "actions",
@@ -111,7 +111,7 @@ export default function CategoryBlog() {
             <button
               onClick={() => {
                 setIsModalOpenEdit(true);
-                setId(row.original.id);
+                setId(row.original.CategoryID);
               }}
               className="px-3 py-1 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 transform hover:scale-105"
             >
@@ -120,7 +120,7 @@ export default function CategoryBlog() {
             {/* ปุ่มลบ เปิด modal confirm ลบ และตั้งค่า id ที่จะลบ */}
             <button
               onClick={() => {
-                setIdDelete(row.original.id);
+                setIdDelete(row.original.CategoryID);
                 setIsModalOpen(true);
               }}
               className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 transform hover:scale-105"
@@ -154,7 +154,7 @@ export default function CategoryBlog() {
         }}
         className="p-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 transition-all duration-300 transform hover:scale-105"
       >
-        เพิ่มประเภทข้อมูล
+        + เพิ่มประเภทข้อมูล
       </button>
 
       {/* แสดง modal เพิ่มข้อมูลเมื่อ isModalOpenAdd เป็น true */}
