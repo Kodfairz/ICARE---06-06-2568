@@ -26,7 +26,6 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
                 Symptoms : body.symptoms,
                 Diagnosis : body.diagnosis,
                 ICD10_Code : body.icd10_code,
-                isActive : body.isActive
             }
         })
 
@@ -53,6 +52,8 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
                 AdminID : Number(body.admin_id),
                 ImageID : newImage.id,
                 VideoID : newVideo.id,
+                Views : 0,
+                isActive : body.isActive,
             }
         })
 
