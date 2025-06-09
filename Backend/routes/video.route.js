@@ -6,8 +6,10 @@ const prisma = new PrismaClient();           // สร้าง instance ขอ�
 // กำหนด route group ที่มี prefix เป็น /video
 export const videoRoutes = new Elysia({ prefix : "/video" })
 .get("/", async () => {                       // GET /video : ดึงข้อมูลวิดีโอทั้งหมด
-    const video = await prisma.video_links.findMany({
-        // query แบบไม่มีเงื่อนไข คือดึงข้อมูลทั้งหมด
+    const video = await prisma.videoarticles.findMany({
+        include : {
+            videolibrary: true,         // รวมข้อมูลวิดีโอที่เกี่ยวข้อง
+        }
     })
 
     if(!video) {                             // ถ้าไม่มีข้อมูลวิดีโอ
@@ -19,11 +21,14 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .get("/video-recommend", async () => {       // GET /video/video-recommend : ดึงวิดีโอแนะนำ
-    const video = await prisma.video_links.findMany({
+    const video = await prisma.videoarticles.findMany({
         orderBy: {
-            views: 'desc',                   // เรียงตามจำนวนวิวมากไปน้อย
+            Views: 'desc',                   // เรียงตามจำนวนวิวมากไปน้อย
         },
         take: 6 ,                           // เอาแค่ 6 รายการ
+        include : {
+            videolibrary: true,              // รวมข้อมูลวิดีโอที่เกี่ยวข้อง
+        },
         where : {
             isActive : true                  // เฉพาะวิดีโอที่ active เท่านั้น
         }
@@ -38,9 +43,12 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .get("/user", async () => {                  // GET /video/user : ดึงวิดีโอที่ active ทั้งหมด (เหมือน /video)
-    const video = await prisma.video_links.findMany({
+    const video = await prisma.videoarticles.findMany({
         where : {
             isActive : true                  // เฉพาะวิดีโอ active
+        },
+        include : {
+            videolibrary: true,              // รวมข้อมูลวิดีโอที่เกี่ยวข้อง
         }
     })
 
@@ -53,9 +61,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .post("/", async ({ body }) => {             // POST /video : เพิ่มวิดีโอใหม่
-    const video = await prisma.video_links.findFirst({
+    const video = await prisma.videolibrary.findFirst({
         where : {
-            title : body.title               // ตรวจสอบว่ามีวิดีโอที่ชื่อเดียวกันหรือไม่
+            VideoName : body.title               // ตรวจสอบว่ามีวิดีโอที่ชื่อเดียวกันหรือไม่
         }
     })
 
@@ -63,20 +71,23 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ชื่อวิดีโอซ้ำ")       // โยน error แจ้งชื่อซ้ำ
     }
 
-    const newVideo = await prisma.video_links.create({
+    const newVideoLibrary = await prisma.videolibrary.create({
         data : {                            // สร้างวิดีโอใหม่ในฐานข้อมูล
-            title : body.title,
-            url : body.url,
-            description : body.description,
-            isActive : true,                // ตั้งสถานะเริ่มต้นเป็น active
-            thumbnail_url : body.thumbnail_url,
-            user_id : Number(body.user_id),   // แปลง user_id เป็นตัวเลข
-            update_id  : Number(body.update_id), // แปลง update_id เป็นตัวเลข
-            views : 0                      // จำนวนวิวเริ่มต้น 0
+            VideoName : body.title,
+            VideoURL : body.url,
         }
     })
 
-    if(!newVideo) {                         // ถ้าเพิ่มวิดีโอไม่สำเร็จ
+    const newVideoArticle = await prisma.videoarticles.create({
+        data : {
+            VideoID : newVideoLibrary.VideoID,  // ใช้ VideoID ที่สร้างใหม่
+            AdminID : Number(body.admin_id),  // ใช้ admin_id ที่ส่งมา
+            Views : 0,                // เริ่มต้นวิวที่ 0
+            isActive : body.isActive,  // ใช้สถานะ active ที่ส่งมา
+        }
+    })
+
+    if(!newVideoArticle || !newVideoLibrary) {                         // ถ้าเพิ่มวิดีโอไม่สำเร็จ
         throw new Error("ไม่สามารถเพิ่มวิดีโอได้");
     }
 
@@ -85,9 +96,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .put("/:id", async ({ body, params }) => {  // PUT /video/:id : แก้ไขข้อมูลวิดีโอตาม id
-    const video = await prisma.video_links.findFirst({
+    const video = await prisma.videolibrary.findFirst({
         where : {
-            id : Number(params.id)            // หา video ที่มี id ตรงกับ param
+            VideoID : Number(params.id)            // หา video ที่มี id ตรงกับ param
         }
     })
 
@@ -95,21 +106,27 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ไม่เจอวิดีโอ")
     }
 
-    const updateVideo = await prisma.video_links.update({
+    const updateVideoLibrary = await prisma.videolibrary.update({
         where : {
-            id : Number(params.id)            // อัปเดตวิดีโอตาม id
+            VideoID : Number(params.id)            // อัปเดตวิดีโอตาม id
         },
         data : {
-            title : body.title,
-            url : body.url,
-            description : body.description,
-            isActive : body.isActive,       // อัปเดตสถานะ active
-            thumbnail_url : body.thumbnail_url,
-            update_id  : Number(body.update_id),  // อัปเดต update_id
+            VideoName : body.title,              // อัปเดตชื่อวิดีโอ
+            VideoURL : body.url,                  // อัปเดต URL วิดีโอ
         }
     })
 
-    if(!updateVideo) {                      // ถ้าแก้ไขไม่สำเร็จ
+    const updateVideoArticle = await prisma.videoarticles.update({
+        where : {
+            VideoID : Number(params.id)            // อัปเดตข้อมูลใน videoarticles ตาม id
+        },
+        data : {
+            AdminID : Number(body.admin_id),  // อัปเดต admin_id
+            isActive : body.isActive,          // อัปเดตสถานะ isActive
+        }
+    })
+
+    if(!updateVideoLibrary || !updateVideoArticle) {                      // ถ้าแก้ไขไม่สำเร็จ
         throw new Error("แก้ไขวิดีโอไม่สำเร็จ")
     }
 
@@ -118,13 +135,12 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .get("/:id", async ({ params }) => {         // GET /video/:id : ดึงข้อมูลวิดีโอตาม id
-    const video = await prisma.video_links.findFirst({
+    const video = await prisma.videoarticles.findFirst({
         where : {
-            id : Number(params.id)            // หา video ตาม id
+            VideoArticleID : Number(params.id)            // หา video ตาม id
         },
         include : {                          // รวมข้อมูลผู้ใช้ที่เกี่ยวข้องกับ video
-            users_video_links_update_idTousers : true,
-            users_video_links_user_idTousers : true
+            videolibrary: true,              // รวมข้อมูลวิดีโอ
         }
     })
 
@@ -132,12 +148,12 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ไม่มีวิดีโอ")
     }
 
-    const updateVideo = await prisma.video_links.update({
+    const updateVideo = await prisma.videoarticles.update({
         where : {
-            id : Number(params.id)            // อัปเดตจำนวนวิวเพิ่ม 1
+            VideoArticleID : Number(params.id)            // อัปเดตจำนวนวิวเพิ่ม 1
         },
         data : {
-            views : video.views + 1
+            Views : video.Views + 1
         }
     })
 
@@ -146,9 +162,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .delete("/:id", async ({ params }) => {      // DELETE /video/:id : ลบวิดีโอตาม id
-    const video = await prisma.video_links.findFirst({
+    const video = await prisma.videoarticles.findFirst({
         where : {
-            id : Number(params.id)            // หา video ตาม id
+            VideoArticleID : Number(params.id)            // หา video ตาม id
         }
     })
 
@@ -156,9 +172,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ไม่มีวิดีโอ");
     }
 
-    const deleteVideo = await prisma.video_links.delete({
+    const deleteVideo = await prisma.videoarticles.delete({
         where : {
-            id : Number(params.id)            // ลบวิดีโอตาม id
+            VideoArticleID : Number(params.id)            // ลบวิดีโอตาม id
         }
     })
 
@@ -171,9 +187,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .patch("/change-status/:id", async ({ body, params }) => {  // PATCH /video/change-status/:id : เปลี่ยนสถานะ isActive
-    const video = await prisma.video_links.findFirst({
+    const video = await prisma.videoarticles.findFirst({
         where : {
-            id : Number(params.id)            // หา video ตาม id
+            VideoArticleID : Number(params.id)            // หา video ตาม id
         }
     })
 
@@ -181,13 +197,13 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ไม่เจอวิดีโอ")
     }
 
-    const updateVideo = await prisma.video_links.update({
+    const updateVideo = await prisma.videoarticles.update({
         data : {
+            AdminID : Number(body.admin_id),  // อัปเดต admin_id
             isActive : body.isActive,        // อัปเดตสถานะ isActive
-            updated_at : new Date()          // อัปเดตวันที่แก้ไขเป็นปัจจุบัน
         },
         where : {
-            id : Number(params.id)
+            VideoArticleID : Number(params.id)
         }
     })
 
