@@ -1,0 +1,129 @@
+CREATE DATABASE IF NOT EXISTS FirstAidDB;
+USE FirstAidDB;
+
+-- Categories
+CREATE TABLE Categories (
+    CategoryID INT AUTO_INCREMENT PRIMARY KEY,
+    CategoryName VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+-- Diseases
+CREATE TABLE Diseases (
+    DiseaseID INT AUTO_INCREMENT PRIMARY KEY,
+    DiseaseName VARCHAR(255) NOT NULL,
+    Description TEXT,
+    CategoryID INT,
+    ICD10_Code VARCHAR(20),
+    RiskFactors TEXT,
+    Prevention TEXT,
+    Symptoms TEXT,
+    Diagnosis TEXT,
+    FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID)
+) ENGINE=InnoDB;
+
+-- Treatments
+CREATE TABLE Treatments (
+    TreatmentID INT AUTO_INCREMENT PRIMARY KEY,
+    TreatmentName VARCHAR(255) NOT NULL,
+    Description TEXT,
+    Procedures TEXT,
+    Duration VARCHAR(50),
+    SideEffects TEXT,
+    Contraindications TEXT
+) ENGINE=InnoDB;
+
+-- Medications
+CREATE TABLE Medications (
+    MedicationID INT AUTO_INCREMENT PRIMARY KEY,
+    MedicationName VARCHAR(255) NOT NULL,
+    GenericName VARCHAR(255),
+    DosageForm VARCHAR(50),
+    Strength VARCHAR(50),
+    Indications TEXT,
+    SideEffects TEXT,
+    Contraindications TEXT
+) ENGINE=InnoDB;
+
+-- Disease_Treatments
+CREATE TABLE Disease_Treatments (
+    DiseaseID INT,
+    TreatmentID INT,
+    PRIMARY KEY (DiseaseID, TreatmentID),
+    FOREIGN KEY (DiseaseID) REFERENCES Diseases(DiseaseID),
+    FOREIGN KEY (TreatmentID) REFERENCES Treatments(TreatmentID)
+) ENGINE=InnoDB;
+
+-- Disease_Medications
+CREATE TABLE Disease_Medications (
+    DiseaseID INT,
+    MedicationID INT,
+    PRIMARY KEY (DiseaseID, MedicationID),
+    FOREIGN KEY (DiseaseID) REFERENCES Diseases(DiseaseID),
+    FOREIGN KEY (MedicationID) REFERENCES Medications(MedicationID)
+) ENGINE=InnoDB;
+
+-- Image Library
+CREATE TABLE ImageLibrary (
+    ImageID INT AUTO_INCREMENT PRIMARY KEY,
+    ImageName VARCHAR(255) NOT NULL,
+    ImageURL VARCHAR(255) NOT NULL
+) ENGINE=InnoDB;
+
+-- Video Library
+CREATE TABLE VideoLibrary (
+    VideoID INT AUTO_INCREMENT PRIMARY KEY,
+    VideoName VARCHAR(255) NOT NULL,
+    VideoURL VARCHAR(255) NOT NULL
+) ENGINE=InnoDB;
+
+-- Admins
+CREATE TABLE Admins (
+    AdminID INT AUTO_INCREMENT PRIMARY KEY,
+    AdminName VARCHAR(100),
+    isActive TINYINT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- Health Articles
+CREATE TABLE HealthArticles (
+    HealthArticleID INT AUTO_INCREMENT PRIMARY KEY,
+    DiseaseID INT,
+    ImageID INT,
+    VideoID INT,
+    AdminID INT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    isActive TINYINT,
+    FOREIGN KEY (DiseaseID) REFERENCES Diseases(DiseaseID),
+    FOREIGN KEY (ImageID) REFERENCES ImageLibrary(ImageID),
+    FOREIGN KEY (VideoID) REFERENCES VideoLibrary(VideoID),
+    FOREIGN KEY (AdminID) REFERENCES Admins(AdminID)
+) ENGINE=InnoDB;
+
+-- Feedbacks
+CREATE TABLE Feedbacks (
+    FeedbackID INT AUTO_INCREMENT PRIMARY KEY,
+    FeedbackText TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    HealthArticleID INT,
+    FOREIGN KEY (HealthArticleID) REFERENCES HealthArticles(HealthArticleID)
+) ENGINE=InnoDB;
+
+-- Article Edits
+CREATE TABLE ArticleEdits (
+    EditID INT AUTO_INCREMENT PRIMARY KEY,
+    HealthArticleID INT,
+    AdminID INT,
+    EditDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    EditDescription TEXT,
+    FOREIGN KEY (HealthArticleID) REFERENCES HealthArticles(HealthArticleID),
+    FOREIGN KEY (AdminID) REFERENCES Admins(AdminID)
+) ENGINE=InnoDB;
+
+-- Video Articles
+CREATE TABLE VideoArticles (
+    VideoArticleID INT AUTO_INCREMENT PRIMARY KEY,
+    VideoID INT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    isActive TINYINT,
+    FOREIGN KEY (VideoID) REFERENCES VideoLibrary(VideoID)
+) ENGINE=InnoDB;
