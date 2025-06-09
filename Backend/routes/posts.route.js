@@ -9,50 +9,50 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
     // POST /posts - สร้างโพสต์ใหม่
     .post("/", async ({ body }) => {
         // ตรวจสอบว่า title ซ้ำหรือไม่
-        const post = await prisma.posts.findFirst({
-            where : { title : body.title }
+        const diseases = await prisma.diseases.findFirst({
+            where : { DiseaseName : body.name }
         })
 
-        if(post) throw new Error("มีข้อมูลนี้แล้ว");
+        if(diseases) throw new Error("มีข้อมูลนี้แล้ว");
 
-        const newContent = await prisma.content.create({
-            data: {
-                detail: body.content,
+        // สร้างโรคใหม่
+        const newDisease = await prisma.diseases.create({
+            data : {
+                DiseaseName : body.name,
+                Description : body.description,
+                CategoryID : Number(body.category_id),
+                RiskFactors : body.risk_factors,
+                Prevention : body.prevention,
+                Symptoms : body.symptoms,
+                Diagnosis : body.diagnosis,
+                ICD10_Code : body.icd10_code,
+                isActive : body.isActive
             }
         })
 
-        const newProtection = await prisma.protection.create({
-            data: {
-                detail: body.protection,
+        // สร้างรูปใหม่
+        const newImage = await prisma.imagelibrary.create({
+            data : {
+                ImageName : body.image_name,
+                ImageURL : body.image_url,
             }
         })
 
-        const newSituation = await prisma.situation.create({
-            data: {
-                detail: body.situation,
-            }
-        })
-
-        const newSymptom = await prisma.symptom.create({
-            data: {
-                detail: body.symptom,
+        // สร้างวิดีโอใหม่
+        const newVideo = await prisma.videolibrary.create({
+            data : {
+                VideoName : body.video_name,
+                VideoURL : body.video_url,
             }
         })
 
         // สร้างโพสต์ใหม่
-        const newPost = await prisma.posts.create({
+        const newPost = await prisma.healtharticles.create({
             data : {
-                title : body.title,
-                category_id : Number(body.category_id),
-                content_id : newContent.id,
-                protection_id : newProtection.id,
-                situation_id : newSituation.id,
-                symptom_id : newSymptom.id,
-                cover_image_url : body.cover_image_url,
-                video_link : body.video_link,
-                isActive : body.isActive,
-                user_id : Number(body.user_id),
-                user_update_id : Number(body.user_id)
+                DiseaseID : newDisease.id,
+                AdminID : Number(body.admin_id),
+                ImageID : newImage.id,
+                VideoID : newVideo.id,
             }
         })
 
@@ -63,188 +63,161 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
 
     // GET /posts - ดึงโพสต์ทั้งหมดที่เปิดเผยอยู่ (isActive)
     .get("/", async () => {
-        const posts = await prisma.posts.findMany({
+        const healtharticles = await prisma.healtharticles.findMany({
             where : { isActive : true },
             include : { category : true }
         })
 
-        if(!posts) throw new Error("ไม่สามารถเรียกข้อมูลได้");
+        if(!healtharticles) throw new Error("ไม่สามารถเรียกข้อมูลได้");
 
-        return { "resultData" : posts };
+        return { "resultData" : healtharticles };
     })
 
     // GET /posts/post-recommend - ดึงโพสต์ยอดนิยม (views มากสุด 6 อันดับ)
     .get("/post-recommend", async () => {
-        const posts = await prisma.posts.findMany({
-            orderBy: { views: 'desc' },
-            include : { category : true },
+        const healtharticles = await prisma.healtharticles.findMany({
+            orderBy: { Views: 'desc' },
+            include : { diseases : true },
             where : { isActive : true },
             take: 6 
         });
 
-        if(!posts) throw new Error("ไม่สามารถเรียกข้อมูลได้");
+        if(!healtharticles) throw new Error("ไม่สามารถเรียกข้อมูลได้");
 
-        return { "resultData" : posts };
+        return { "resultData" : healtharticles };
     })
 
     // GET /posts/admin - ดึงโพสต์ทั้งหมด (รวมโพสต์ที่ไม่ active)
     .get("/admin", async () => {
-        const posts = await prisma.posts.findMany({
+        const healtharticles = await prisma.healtharticles.findMany({
             include : {
-                category : true,
-                users_posts_user_idTousers: {
-                    select: {
-                        id: true,
-                        username: true,
-                    }
-                },
+                diseases : true,
             }
         })
 
-        if(!posts) throw new Error("ไม่สามารถเรียกข้อมูลได้");
+        if(!healtharticles) throw new Error("ไม่สามารถเรียกข้อมูลได้");
 
-        return { "resultData" : posts };
+        return { "resultData" : healtharticles };
     })
 
     // PATCH /posts/change-status/:id - เปลี่ยนสถานะการเผยแพร่ของโพสต์
     .patch("/change-status/:id", async ({ body, params }) => {
-        const post = await prisma.posts.findFirst({
-            where : { id : Number(params.id) }
+        const healtharticles = await prisma.healtharticles.findFirst({
+            where : { HealthArticleID : Number(params.id) }
         })
 
-        if(!post) throw new Error("ไม่เจอข้อมูล");
+        if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
-        const updatePost = await prisma.posts.update({
+        const updateHealtharticles = await prisma.healtharticles.update({
             data : {
                 isActive : body.isActive,
-                updated_at : new Date()
             },
-            where : { id : Number(params.id) }
+            where : { HealthArticleID : Number(params.id) }
         })
 
-        if(!updatePost) throw new Error("ไม่สามารถเปลี่ยนแปลงสถานะการเผยแพร่ได้");
+        await prisma.articleedits.create({
+            data : {
+                HealthArticleID : healtharticles.HealthArticleID,
+                AdminID : Number(body.admin_id),
+                EditDescription : "เปลี่ยนสถานะการเผยแพร่",
+            }
+        })
+
+        if(!updateHealtharticles) throw new Error("ไม่สามารถเปลี่ยนแปลงสถานะการเผยแพร่ได้");
 
         return { "message" : "เปลี่ยนสถานะสำเร็จ" };
     })
 
     // DELETE /posts/:id - ลบโพสต์
     .delete("/:id", async ({ params }) => {
-        const post = await prisma.posts.findFirst({
-            where : { id : Number(params.id) }
+        const healtharticles = await prisma.healtharticles.findFirst({
+            where : { HealthArticleID : Number(params.id) }
         })
 
-        if(!post) throw new Error("ไม่เจอข้อมูล");
+        if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
-        const deletePost = await prisma.posts.delete({
-            where : { id : Number(params.id) }
+        const deleteHealtharticles = await prisma.healtharticles.delete({
+            where : { HealthArticleID : Number(params.id) }
         })
 
-        const deleteContent = await prisma.content.delete({
-            where: { id: post.content_id }
+        const deleteDeseases = await prisma.diseases.delete({
+            where: { id: healtharticles.DiseaseID }
         })
 
-        const deleteProtection = await prisma.protection.delete({
-            where: { id: post.protection_id }
-        })
-
-        const deleteSituation = await prisma.situation.delete({
-            where: { id: post.situation_id }
-        })
-
-        const deleteSymptom = await prisma.symptom.delete({
-            where: { id: post.symptom_id }
-        })
-
-        if(!deletePost) throw new Error("ไม่สามารถลบข้อมูลได้");
+        if(!deleteHealtharticles) throw new Error("ไม่สามารถลบข้อมูลได้");
 
         return { "message" : "ลบข้อมูลสำเร็จ" };
     })
 
     // GET /posts/:id - ดึงข้อมูลโพสต์ตาม ID
     .get("/:id", async ({ params }) => {
-        const post = await prisma.posts.findFirst({
-            where : { id : Number(params.id) },
+        const healtharticles = await prisma.healtharticles.findFirst({
+            where : { HealthArticleID : Number(params.id) },
             include: {
-                content: true,
-                protection: true,
-                situation: true,
-                symptom: true,
+                diseases: true,
             }
         })
 
-        if(!post) throw new Error("ไม่เจอข้อมูล");
+        if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
-        return { "resultData" : post };
+        return { "resultData" : healtharticles };
     })
 
     // PUT /posts/:id - แก้ไขข้อมูลโพสต์
     .put("/:id", async ({ body, params }) => {
-        const post = await prisma.posts.findFirst({
-            where : { id : Number(params.id) }
+        const healtharticles = await prisma.healtharticles.findFirst({
+            where : { DiseaseID : Number(params.id) }
         })
 
-        if(!post) throw new Error("ไม่เจอข้อมูล");
+        if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
-        const updateContent = await prisma.content.update({
-            where: { id: post.content_id },
-            data: { detail: body.content }
-        })
-
-        const updateProtection = await prisma.protection.update({
-            where: { id: post.protection_id },
-            data: { detail: body.protection }
-        })
-
-        const updateSituation = await prisma.situation.update({
-            where: { id: post.situation_id },
-            data: { detail: body.situation }
-        })
-
-        const updateSymptom = await prisma.symptom.update({
-            where: { id: post.symptom_id },
-            data: { detail: body.symptom }
-        })
-
-        const updatePost = await prisma.posts.update({
-            where : { id : Number(params.id) },
-            data : {
-                title : body.title,
-                category_id : Number(body.category_id),
-                cover_image_url : body.cover_image_url,
-                video_link : body.video_link,
-                isActive : body.isActive,
-                updated_at : new Date(),
-                user_update_id : Number(body.user_update_id)
+        const updateDisease = await prisma.diseases.update({
+            where: { DiseaseID: healtharticles.DiseaseID },
+            data: {
+                DiseaseName: body.name,
+                Description: body.description,
+                CategoryID: Number(body.category_id),
+                RiskFactors: body.risk_factors,
+                Prevention: body.prevention,
+                Symptoms: body.symptoms,
+                Diagnosis: body.diagnosis,
+                ICD10_Code: body.icd10_code,
+                isActive: body.isActive
             }
         })
 
-        if(!updatePost) throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+        await prisma.articleedits.create({
+            data : {
+                HealthArticleID : healtharticles.HealthArticleID,
+                AdminID : Number(body.admin_id),
+                EditDescription : body.edit_description,
+            }
+        })
+
+        if(!updateDisease) throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
 
         return { "message" : "แก้ไขข้อมูลสำเร็จ" };
     })
 
     // GET /posts/user/:id - ดูโพสต์เฉพาะ ID และเพิ่มยอด View
     .get("/user/:id", async ({ params }) => {
-        const post = await prisma.posts.findFirst({
+        const healtharticles = await prisma.healtharticles.findFirst({
             where : { id : Number(params.id) },
             include : {
-                category : true,
-                content : true,
-                protection: true,
-                situation: true,
-                symptom: true,
-                users_posts_user_idTousers : true,
-                users_posts_user_update_idTousers : true
+                diseases: true,
+                category: true,
+                imagelibrary: true,
+                videolibrary: true
             }
         })
 
-        if(!post) throw new Error("ไม่เจอข้อมูล");
+        if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
         // อัปเดตยอดผู้ชม
-        const updateView = await prisma.posts.update({
-            where : { id : Number(params.id) },
-            data : { views : post.views + 1 }
+        const updateView = await prisma.healtharticles.update({
+            where : { HealthArticleID : Number(params.id) },
+            data : { Views : healtharticles.Views + 1 }
         })
 
-        return { "resultData" : post };
+        return { "resultData" : healtharticles };
     })
