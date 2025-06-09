@@ -10,20 +10,20 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
     // ดึงผู้ใช้ทั้งหมด
     .get('/', async () => {
-        return await prisma.users.findMany();
+        return await prisma.admins.findMany();
     })
 
     // สมัครผู้ใช้ใหม่
     .post('/', async ({ body }) => {
         // ตรวจสอบว่ามี username นี้ในระบบหรือยัง
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                username: body.username
+                AdminName: body.username
             }
         });
 
         // ถ้ามีแล้วให้แจ้งว่าไม่สามารถสมัครซ้ำได้
-        if (user) {
+        if (admin) {
             throw new Error("มีผู้ใช้งานนี้แล้ว");
         }
 
@@ -31,11 +31,10 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         const password = bcrypt.hashSync(body.password, 10);
 
         // สร้างผู้ใช้ใหม่
-        return await prisma.users.create({
+        return await prisma.admins.create({
             data: {
-                username: body.username,
+                AdminName: body.username,
                 password: password,
-                role: body.role
             }
         });
     })
@@ -43,23 +42,23 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     // ล็อกอินผู้ใช้
     .post("/login", async ({ body }) => {
         // ตรวจสอบว่ามีผู้ใช้นี้หรือไม่
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                username: body.username
+                AdminName: body.username
             }
         });
 
-        if (!user) {
+        if (!admin) {
             throw new Error("ไม่พบผู้ใช้งาน");
         }
 
         // ตรวจสอบว่าผู้ใช้ถูกเปิดใช้งานอยู่หรือไม่
-        if (!user.isActive) {
+        if (!admin.isActive) {
             throw new Error("ผู้ใช้ปิดใช้งาน");
         }
 
         // ตรวจสอบความถูกต้องของรหัสผ่าน
-        const isPasswordMatch = bcrypt.compareSync(body.password, user.password);
+        const isPasswordMatch = bcrypt.compareSync(body.password, admin.Password);
 
         if (!isPasswordMatch) {
             throw new Error("รหัสผ่านไม่ถูกต้อง");
@@ -68,10 +67,9 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         // สร้าง JWT token เพื่อส่งกลับไปให้ client
         const token = jwt.sign({
             data: {
-                "username": user.username,
-                "role": user.role,
-                "id": user.id,
-                "isActive": user.isActive
+                "username": admin.AdminName,
+                "id": admin.AdminID,
+                "isActive": admin.isActive
             }
         }, 'secret', { expiresIn: '24h' }); // หมายเหตุ: ควรใช้ secret จาก .env
 
@@ -79,10 +77,9 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         return {
             "token": token,
             "resultData": {
-                "username": user.username,
-                "role": user.role,
-                "id": user.id,
-                "isActive": user.isActive
+                "username": admin.AdminName,
+                "id": admin.AdminID,
+                "isActive": admin.isActive
             }
         };
     })
@@ -90,27 +87,27 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     // แก้ไขชื่อผู้ใช้งาน
     .put("/:id", async ({ body, params }) => {
         // ตรวจสอบว่าผู้ใช้มีอยู่จริงหรือไม่
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             }
         });
 
-        if (!user) {
+        if (!admin) {
             throw new Error("ไม่พบผู้ใช้งาน");
         }
 
         // อัปเดตชื่อผู้ใช้
-        const updateUser = await prisma.users.update({
+        const updateAdmin = await prisma.admins.update({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             },
             data: {
-                username: body.username
+                AdminName: body.username
             }
         });
 
-        if (!updateUser) {
+        if (!updateAdmin) {
             throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
         }
 
@@ -122,14 +119,14 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     // เปลี่ยนรหัสผ่านผู้ใช้
     .put("/change-password/:id", async ({ body, params }) => {
         // ค้นหาผู้ใช้ตาม id
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             }
         });
 
         // ตรวจสอบรหัสผ่านเดิมว่าตรงหรือไม่
-        const isPasswordMatch = bcrypt.compareSync(body.oldPassword, user.password);
+        const isPasswordMatch = bcrypt.compareSync(body.oldPassword, admin.Password);
 
         if (!isPasswordMatch) {
             throw new Error("รหัสผ่านเดิมไม่ถูกต้อง");
@@ -141,10 +138,10 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         // อัปเดตรหัสผ่านใหม่
         const updateUser = await prisma.users.update({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             },
             data: {
-                password: newPassword
+                Password: newPassword
             }
         });
 
@@ -159,27 +156,27 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
     // เปลี่ยนสถานะการใช้งาน (active/inactive)
     .patch("/status/:id", async ({ params }) => {
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             }
         });
 
-        if (!user) {
+        if (!admin) {
             throw new Error("ไม่พบผู้ใช้งาน");
         }
 
         // toggle ค่าสถานะ
-        const updateUser = await prisma.users.update({
+        const updateAdmin = await prisma.admins.update({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             },
             data: {
-                isActive: !user.isActive
+                isActive: !admin.isActive
             }
         });
 
-        if (!updateUser) {
+        if (!updateAdmin) {
             throw new Error("ไม่สามารถเปลี่ยนสถานะได้");
         }
 
@@ -190,23 +187,23 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
     // ลบผู้ใช้งาน
     .delete("/:id", async ({ params }) => {
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             }
         });
 
-        if (!user) {
+        if (!admin) {
             throw new Error("ไม่พบผู้ใช้งาน");
         }
 
-        const deleteUser = await prisma.users.delete({
+        const deleteAdmin = await prisma.admins.delete({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             }
         });
 
-        if (!deleteUser) {
+        if (!deleteAdmin) {
             throw new Error("ไม่สามารถลบข้อมูลได้");
         }
 
@@ -217,17 +214,17 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
     // ดึงข้อมูลผู้ใช้รายบุคคล
     .get("/:id", async ({ params }) => {
-        const user = await prisma.users.findFirst({
+        const admin = await prisma.admins.findFirst({
             where: {
-                id: Number(params.id)
+                AdminID: Number(params.id)
             }
         });
 
-        if (!user) {
+        if (!admin) {
             throw new Error("ไม่พบผู้ใช้งาน");
         }
 
         return {
-            "resultData": user
+            "resultData": admin
         };
     });
