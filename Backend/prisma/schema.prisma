@@ -11,7 +11,7 @@ model admins {
   AdminID        Int              @id @default(autoincrement())
   AdminName      String           @db.VarChar(100)
   Password       String           @db.VarChar(255)
-  isActive       Int?             @db.TinyInt
+  isActive       Boolean
   CreatedAt      DateTime         @default(now()) @db.Timestamp(0)
   articleedits   articleedits[]
   healtharticles healtharticles[]
@@ -93,7 +93,7 @@ model healtharticles {
   VideoID         Int?
   Views           Int?
   CreatedAt       DateTime       @default(now()) @db.Timestamp(0)
-  isActive        Int?           @db.TinyInt
+  isActive        Boolean
   articleedits    articleedits[]
   feedbacks       feedbacks[]
   diseases        diseases?      @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_1")
@@ -143,7 +143,7 @@ model videoarticles {
   AdminID        Int?
   Views          Int?
   CreatedAt      DateTime      @default(now()) @db.Timestamp(0)
-  isActive       Int?          @db.TinyInt
+  isActive       Boolean
   videolibrary   videolibrary? @relation(fields: [VideoID], references: [VideoID], onDelete: Restrict, onUpdate: Restrict, map: "videoarticles_ibfk_1")
   admins         admins?       @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "videoarticles_ibfk_2")
 
