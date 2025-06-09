@@ -16,8 +16,8 @@ export default function EditChangePassword({ onClose, onSubmit, idUser }) {
     // onSubmit - ฟังก์ชันส่งข้อมูลรหัสผ่านใหม่
     // idUser - รหัสผู้ใช้ที่จะแก้ไขรหัสผ่าน
 
-    const [user, setUser] = useState({ username: "", password: "", newPassword: "" });
-    // กำหนด state สำหรับเก็บข้อมูลผู้ใช้ ได้แก่ username, password เดิม และรหัสผ่านใหม่
+    const [user, setUser] = useState({ AdminName: "", password: "", newPassword: "" });
+    // กำหนด state สำหรับเก็บข้อมูลผู้ใช้ ได้แก่ AdminName, password เดิม และรหัสผ่านใหม่
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -72,11 +72,11 @@ export default function EditChangePassword({ onClose, onSubmit, idUser }) {
 
                     <input
                         type="text"
-                        placeholder="Username"
-                        value={user.username || ""}
+                        placeholder="AdminName"
+                        value={user.AdminName || ""}
                         readOnly
-                        // ช่อง username แสดงข้อมูลผู้ใช้แบบอ่านอย่างเดียว (ไม่แก้ไขได้)
-                        onChange={(e) => setUser({ ...user, username: e.target.value })}
+                        // ช่อง AdminName แสดงข้อมูลผู้ใช้แบบอ่านอย่างเดียว (ไม่แก้ไขได้)
+                        onChange={(e) => setUser({ ...user, AdminName: e.target.value })}
                         // ถึงมี onChange แต่เพราะ readonly เลยไม่สามารถเปลี่ยนค่าได้จริง
                         required
                         className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"

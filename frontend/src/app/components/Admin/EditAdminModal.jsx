@@ -16,8 +16,8 @@ export default function EditAdminModal({ onClose, onSubmit, idUser }) {
     // onSubmit - ฟังก์ชันสำหรับส่งข้อมูลเมื่อแก้ไขเสร็จ
     // idUser - รหัสผู้ใช้ที่จะแก้ไขข้อมูล
 
-    const [newUser, setNewUser] = useState({ username: "" });
-    // กำหนด state สำหรับเก็บข้อมูลผู้ใช้ใหม่ในแบบฟอร์ม (เริ่มต้นเป็น username ว่าง)
+    const [newUser, setNewUser] = useState({ AdminName: "" });
+    // กำหนด state สำหรับเก็บข้อมูลผู้ใช้ใหม่ในแบบฟอร์ม (เริ่มต้นเป็น AdminName ว่าง)
 
     const handleSubmit = (event) => {
         event.preventDefault(); 
@@ -26,7 +26,7 @@ export default function EditAdminModal({ onClose, onSubmit, idUser }) {
         onSubmit(newUser); 
         // เรียกฟังก์ชัน onSubmit ส่งข้อมูล newUser กลับไปให้ parent component
 
-        setNewUser({ username: "" }); 
+        setNewUser({ AdminName: "" }); 
         // ล้างข้อมูลฟอร์มหลัง submit
     };
 
@@ -70,14 +70,14 @@ export default function EditAdminModal({ onClose, onSubmit, idUser }) {
                     {/* ฟอร์มแก้ไขข้อมูล */}
                     <input
                         type="text"
-                        placeholder="Username"
-                        value={newUser.username}
-                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                        // อัปเดตค่า username ใน state ทุกครั้งที่มีการพิมพ์ใน input
+                        placeholder="AdminName"
+                        value={newUser.AdminName}
+                        onChange={(e) => setNewUser({ ...newUser, AdminName: e.target.value })}
+                        // อัปเดตค่า AdminName ใน state ทุกครั้งที่มีการพิมพ์ใน input
                         required
                         className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                     />
-                    {/* ช่องกรอก username */}
+                    {/* ช่องกรอก AdminName */}
 
                     <div className="flex gap-4">
                         <button

@@ -6,14 +6,14 @@ import { useState } from "react";
 
 // ประกาศฟังก์ชันคอมโพเนนต์ AddAdminModal ซึ่งรับ props 2 ตัวคือ onClose และ onSubmit
 export default function AddAdminModal({ onClose, onSubmit }) {
-    // สร้าง state เก็บข้อมูลผู้ใช้ใหม่ โดยเริ่มจาก username และ password เป็นค่าว่าง
-    const [newUser, setNewUser] = useState({ username: "", password: "" });
+    // สร้าง state เก็บข้อมูลผู้ใช้ใหม่ โดยเริ่มจาก AdminName และ password เป็นค่าว่าง
+    const [newUser, setNewUser] = useState({ AdminName: "", password: "" });
 
     // ฟังก์ชันจัดการเมื่อ submit ฟอร์ม
     const handleSubmit = (event) => {
         event.preventDefault(); // ป้องกันไม่ให้หน้าเว็บรีเฟรชตามปกติของฟอร์ม
         onSubmit(newUser); // เรียกฟังก์ชัน onSubmit ที่ส่งมาจาก props พร้อมข้อมูลผู้ใช้ใหม่
-        setNewUser({ username: "", password: "" }); // เคลียร์ข้อมูลฟอร์มให้ว่างหลังส่งข้อมูลแล้ว
+        setNewUser({ AdminName: "", password: "" }); // เคลียร์ข้อมูลฟอร์มให้ว่างหลังส่งข้อมูลแล้ว
     };
 
     return (
@@ -36,12 +36,12 @@ export default function AddAdminModal({ onClose, onSubmit }) {
 
                 {/* ฟอร์มเพิ่มแอดมิน */}
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* ช่องกรอก username */}
+                    {/* ช่องกรอก AdminName */}
                     <input
                         type="text"
-                        placeholder="Username"
-                        value={newUser.username} // ผูกค่า input กับ state newUser.username
-                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })} 
+                        placeholder="AdminName"
+                        value={newUser.AdminName} // ผูกค่า input กับ state newUser.AdminName
+                        onChange={(e) => setNewUser({ ...newUser, AdminName: e.target.value })} 
                         // เมื่อเปลี่ยนแปลง input จะอัปเดต state โดยไม่ลบค่าอื่น ๆ (spread operator ...)
                         required // กำหนดให้ช่องนี้ต้องกรอก
                         className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"

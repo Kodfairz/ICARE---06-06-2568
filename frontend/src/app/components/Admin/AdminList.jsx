@@ -85,9 +85,8 @@ export default function AdminList() {
     const handleAddUser = async (newUser) => {
         try {
             await axios.post(`${API}/users`, {
-                username: newUser.username,
+                username: newUser.AdminName,
                 password: newUser.password,
-                role: "admin", // กำหนด role เป็น admin
             });
             toast.success("เพิ่มข้อมูลแอดมินสำเร็จ");
             setIsModalOpen(false); // ปิด modal
@@ -118,7 +117,7 @@ export default function AdminList() {
     const handleEditUser = async (newUser) => {
         try {
             await axios.put(`${API}/users/${idUser}`, {
-                username: newUser.username,
+                username: newUser.AdminName,
             });
             toast.success("แก้ไขแอดมินสำเร็จ");
             setIsModalOpenEdit(false);
@@ -157,15 +156,15 @@ export default function AdminList() {
     // กำหนดคอลัมน์ของตาราง
     const columns = useMemo(
         () => [
-            { header: "ไอดี", accessorKey: "id" }, // แสดง id
-            { header: "ผู้ใช้", accessorKey: "username" }, // แสดง username
+            { header: "ไอดี", accessorKey: "AdminID" }, // แสดง id
+            { header: "ผู้ใช้", accessorKey: "AdminName" }, // แสดง username
             {
                 header: "สถานะ",
                 accessorKey: "active",
                 cell: ({ row }) => (
                     <select
                         value={row.original.isActive ? "active" : "inactive"}
-                        onChange={() => handleStatusChange(row.original.id)} // เปลี่ยนสถานะเมื่อเลือก option
+                        onChange={() => handleStatusChange(row.original.AdminID)} // เปลี่ยนสถานะเมื่อเลือก option
                         className="bg-gray-50 text-gray-700 border border-gray-300 rounded-lg p-2"
                     >
                         <option value="active">ใช้งานอยู่</option>
@@ -182,7 +181,7 @@ export default function AdminList() {
                         <button
                             onClick={() => {
                                 setIsModalOpenEdit(true);
-                                setIdUser(row.original.id); // กำหนด idUser ที่จะแก้ไข
+                                setIdUser(row.original.AdminID); // กำหนด idUser ที่จะแก้ไข
                             }}
                             className="px-3 py-1 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 hover:scale-105"
                         >
@@ -192,7 +191,7 @@ export default function AdminList() {
                         <button
                             onClick={() => {
                                 setIsModalOpenChangePassword(true);
-                                setIdUser(row.original.id); // กำหนด idUser ที่จะแก้ไขรหัสผ่าน
+                                setIdUser(row.original.AdminID); // กำหนด idUser ที่จะแก้ไขรหัสผ่าน
                             }}
                             className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 hover:scale-105"
                         >
@@ -200,7 +199,7 @@ export default function AdminList() {
                         </button>
                         {/* ปุ่มลบ */}
                         <button
-                            onClick={() => confirmDeleteUser(row.original.id)}
+                            onClick={() => confirmDeleteUser(row.original.AdminID)}
                             className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 hover:scale-105"
                         >
                             ลบ

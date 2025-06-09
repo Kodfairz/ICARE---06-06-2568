@@ -34,7 +34,8 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         return await prisma.admins.create({
             data: {
                 AdminName: body.username,
-                password: password,
+                Password: password,
+                isActive: true // ตั้งค่าเริ่มต้นให้ผู้ใช้เปิดใช้งาน
             }
         });
     })
@@ -136,7 +137,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         const newPassword = bcrypt.hashSync(body.newPassword, 10);
 
         // อัปเดตรหัสผ่านใหม่
-        const updateUser = await prisma.users.update({
+        const updateUser = await prisma.admins.update({
             where: {
                 AdminID: Number(params.id)
             },
