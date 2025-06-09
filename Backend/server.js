@@ -4,7 +4,7 @@ import cors from '@elysiajs/cors'
 
 // Routes
 import { userRoutes } from './routes/users.route.js'
-import { categoryRoutes } from './routes/category.js'
+import { categoryRoutes } from './routes/category.route.js'
 import { postRoutes } from './routes/posts.route.js'
 import { commentRoutes } from './routes/comments.route.js'
 import { videoRoutes } from './routes/video.route.js'
