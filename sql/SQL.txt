@@ -89,9 +89,10 @@ CREATE TABLE Admins (
 CREATE TABLE HealthArticles (
     HealthArticleID INT AUTO_INCREMENT PRIMARY KEY,
     DiseaseID INT,
+    AdminID INT,
     ImageID INT,
     VideoID INT,
-    AdminID INT,
+    Views INT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     isActive TINYINT,
     FOREIGN KEY (DiseaseID) REFERENCES Diseases(DiseaseID),
@@ -124,7 +125,10 @@ CREATE TABLE ArticleEdits (
 CREATE TABLE VideoArticles (
     VideoArticleID INT AUTO_INCREMENT PRIMARY KEY,
     VideoID INT,
+    AdminID INT,
+    Views INT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     isActive TINYINT,
-    FOREIGN KEY (VideoID) REFERENCES VideoLibrary(VideoID)
+    FOREIGN KEY (VideoID) REFERENCES VideoLibrary(VideoID),
+    FOREIGN KEY (AdminID) REFERENCES Admins(AdminID)
 ) ENGINE=InnoDB;
