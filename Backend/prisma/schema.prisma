@@ -40,8 +40,8 @@ model categories {
 model disease_medications {
   DiseaseID    Int
   MedicationID Int
-  diseases     diseases    @relation(fields: [DiseaseID], references: [DiseaseID], onUpdate: Restrict, map: "disease_medications_ibfk_1")
-  medications  medications @relation(fields: [MedicationID], references: [MedicationID], onUpdate: Restrict, map: "disease_medications_ibfk_2")
+  diseases     diseases    @relation(fields: [DiseaseID], references: [DiseaseID], onUpdate: Restrict, onDelete: Cascade, map: "disease_medications_ibfk_1")
+  medications  medications @relation(fields: [MedicationID], references: [MedicationID], onUpdate: Restrict, onDelete: Cascade, map: "disease_medications_ibfk_2")
 
   @@id([DiseaseID, MedicationID])
   @@index([MedicationID], map: "MedicationID")
@@ -50,8 +50,8 @@ model disease_medications {
 model disease_treatments {
   DiseaseID   Int
   TreatmentID Int
-  diseases    diseases   @relation(fields: [DiseaseID], references: [DiseaseID], onUpdate: Restrict, map: "disease_treatments_ibfk_1")
-  treatments  treatments @relation(fields: [TreatmentID], references: [TreatmentID], onUpdate: Restrict, map: "disease_treatments_ibfk_2")
+  diseases    diseases   @relation(fields: [DiseaseID], references: [DiseaseID], onUpdate: Restrict, onDelete: Cascade, map: "disease_treatments_ibfk_1")
+  treatments  treatments @relation(fields: [TreatmentID], references: [TreatmentID], onUpdate: Restrict, onDelete: Cascade, map: "disease_treatments_ibfk_2")
 
   @@id([DiseaseID, TreatmentID])
   @@index([TreatmentID], map: "TreatmentID")
@@ -96,7 +96,7 @@ model healtharticles {
   isActive        Boolean
   articleedits    articleedits[]
   feedbacks       feedbacks[]
-  diseases        diseases?      @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_1")
+  diseases        diseases?      @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Cascade, onUpdate: Restrict, map: "healtharticles_ibfk_1")
   imagelibrary    imagelibrary?  @relation(fields: [ImageID], references: [ImageID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_2")
   videolibrary    videolibrary?  @relation(fields: [VideoID], references: [VideoID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_3")
   admins          admins?        @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_4")
