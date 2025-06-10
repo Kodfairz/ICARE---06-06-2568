@@ -8,6 +8,8 @@ import { categoryRoutes } from './routes/category.route.js'
 import { postRoutes } from './routes/posts.route.js'
 import { commentRoutes } from './routes/comments.route.js'
 import { videoRoutes } from './routes/video.route.js'
+import { MedicationsRoutes } from './routes/medication.route.js'
+
 const app = new Elysia({ adapter: node() })
 	.use(cors())
 	.get('/', () => 'Hello Elysia')
@@ -17,6 +19,7 @@ const app = new Elysia({ adapter: node() })
 	.use(postRoutes)
 	.use(commentRoutes)
 	.use(videoRoutes)
+	.use(MedicationsRoutes)
 
 	.listen(4000, ({ hostname, port }) => {
 		console.log(

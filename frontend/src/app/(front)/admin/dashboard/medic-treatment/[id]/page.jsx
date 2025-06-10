@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 // นำเข้า React hooks ที่ใช้ใน component
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 // นำเข้า useRouter เพื่อใช้สำหรับการนำทางเปลี่ยนหน้าใน Next.js
 
 import {
@@ -21,38 +21,26 @@ import Cookies from "js-cookie";
 import axios from "axios";
 // นำเข้า axios สำหรับเรียก API
 
-import { API } from "../../../../service/api";
+import { API } from "../../../../../service/api";
 // นำเข้าค่าฐาน URL API ที่กำหนดไว้ในโปรเจกต์
 
 import { toast } from "react-toastify";
 // นำเข้า toast สำหรับแสดงข้อความแจ้งเตือนสถานะต่าง ๆ
 
-import * as dayjs from "dayjs";
-// นำเข้า dayjs สำหรับจัดการวันที่และเวลา
+// import ModalConfirm from "@/app/components/ModalConfirm";  // เพิ่ม import ModalConfirm
+// // นำเข้า ModalConfirm สำหรับ modal ยืนยันการลบข้อมูล
 
-import relativeTime from "dayjs/plugin/relativeTime";
-// นำเข้า plugin สำหรับแสดงเวลาที่ผ่านมาในรูปแบบ relative เช่น "2 ชั่วโมงที่แล้ว"
+// import {Tabs, Tab} from "@heroui/tabs";
 
-import "dayjs/locale/th"; // ต้องมีการ import locale ของไทยก่อน
-// นำเข้า locale ภาษาไทยของ dayjs
-
-import Switch from "react-switch"; // นำเข้าคอมโพเนนต์ switch
-// นำเข้า Switch component สำหรับสวิตช์เปิด/ปิด
-
-import ModalConfirm from "../../../ModalConfirm";  // เพิ่ม import ModalConfirm
-// นำเข้า ModalConfirm สำหรับ modal ยืนยันการลบข้อมูล
-
-export default function BlogManagement() {
-  dayjs.locale("th"); // ตั้งค่า locale เป็นภาษาไทยสำหรับ dayjs
-  dayjs.extend(relativeTime); // เพิ่ม plugin relativeTime ให้ dayjs ใช้งานได้
-
+export default function Medic_Treatment_Table() {
+  const { id } = useParams();
   const router = useRouter();
   // ใช้สำหรับเปลี่ยนหน้า
 
   const [userId, setUserId] = useState(null);
   // สถานะเก็บ id ของผู้ใช้ที่ล็อกอินอยู่
 
-  const [posts, setPosts] = useState([]);
+  const [medics, setMedics] = useState([]);
   // สถานะเก็บข้อมูลโพสต์ที่ดึงมาจาก API
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,11 +74,11 @@ export default function BlogManagement() {
   }, []);
 
   // ฟังก์ชันดึงข้อมูลโพสต์จาก API
-  const getPosts = async () => {
+  const getMedics = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API}/posts/admin`);
-      setPosts(response.data.resultData); // เก็บข้อมูลโพสต์ลง state
+      const response = await axios.get(`${API}/medics/${id}`);
+      setMedics(response.data.resultData); // เก็บข้อมูลโพสต์ลง state
     } catch (error) {
       console.log(error);
       toast.error(error.response.message || "ไม่สามารถเรียกข้อมูลได้"); // แจ้งเตือนถ้าดึงข้อมูลไม่สำเร็จ
@@ -101,32 +89,16 @@ export default function BlogManagement() {
   // ดึงข้อมูลโพสต์ครั้งแรกตอน component โหลด
   useEffect(() => {
     if (userId) {
-      getPosts();
+      getMedics();
     }
   }, [userId]);
-
-  // ฟังก์ชันเปลี่ยนสถานะเปิด/ปิดโพสต์ (isActive)
-  const changeStatus = async (id, status) => {
-    try {
-      const response = await axios.patch(`${API}/posts/change-status/${id}`, {
-        isActive: status,
-        admin_id: userId
-      });
-
-      toast.success(response.data.message || "เปลี่ยนสถานะสำเร็จแล้ว");
-      getPosts(); // ดึงข้อมูลใหม่มาอัปเดตหลังเปลี่ยนสถานะ
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.message || "ไม่สามารถเปลี่ยนสถานะได้");
-    }
-  };
 
   // ฟังก์ชันลบโพสต์ตาม id ที่เลือกไว้
   const deletePost = async () => {
     try {
       const response = await axios.delete(`${API}/posts/${postIdToDelete}`);
       toast.success(response.data.message || "ลบข้อมูลสำเร็จแล้ว");
-      getPosts(); // ดึงข้อมูลใหม่หลังลบเสร็จ
+      getMedics(); // ดึงข้อมูลใหม่หลังลบเสร็จ
       setIsModalOpen(false); // ปิด modal confirm
       setPostIdToDelete(null); // ล้างค่า id ที่จะลบ
     } catch (error) {
@@ -140,122 +112,75 @@ export default function BlogManagement() {
     () => [
       {
         header: "#",
-        accessorKey: "HealthArticleID", // แสดง id ของโพสต์
+        accessorKey: "MedicationID", // แสดง id ของโพสต์
       },
       {
-        header: "หน้าปก",
+        header: "ชื่อยา",
         cell: ({ row }) => (
           <>
-            {/* แสดงรูปหน้าปกโพสต์ */}
-            <img
-              src={row.original.imagelibrary.ImageURL}
-              alt={row.original.imagelibrary.ImageName}
-              className="w-24 rounded-2xl"
-            />
+            {row.original.medications.MedicationName}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
-        header: "หัวข้อ",
+        header: "ชื่อสามัญ",
         cell: ({ row }) => (
           <>
-            {row.original.diseases.DiseaseName}
+            {row.original.medications.GenericName}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
-        header: "ประเภทข้อมูล",
+        header: "รูปแบบยา",
         cell: ({ row }) => (
           <>
-            {/* แสดงชื่อประเภทข้อมูลในรูปแบบ badge สีเขียว */}
-            <p className="bg-green-500 text-white p-2 rounded-full text-center font-semibold shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 cursor-pointer">
-              {row.original.diseases.categories.CategoryName}
-            </p>
+            {row.original.medications.DosageForm}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
-        header: "วันที่สร้าง",
+        header: "ความแรงของยา",
         cell: ({ row }) => (
           <>
-            {/* แสดงวันที่สร้างในรูปแบบวันที่เต็ม (เช่น 15 พฤษภาคม 2568) */}
-            <p>{dayjs(row.original.Created_At).format("DD MMMM YYYY")}</p>
+            {row.original.medications.Strength}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
-        header: "อัพเดทล่าสุด",
+        header: "ข้อบ่งใช้",
         cell: ({ row }) => (
           <>
-            {/* แสดงเวลาที่อัพเดทล่าสุดในรูปแบบ relative เช่น "2 ชั่วโมงที่แล้ว" */}
-            <p>{dayjs(row.original.articleedits.EditDate).fromNow()}</p>
+            {row.original.medications.Indications}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
-        header: "โพสต์โดย",
+        header: "ผลข้างเคียง",
         cell: ({ row }) => (
           <>
-            {/* แสดงชื่อคนที่โพสต์" */}
-            <p>{row.original.admins.AdminName}</p>
+            {row.original.medications.SideEffects}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
-        header: "สถานะ",
+        header: "ข้อห้ามใช้",
         cell: ({ row }) => (
           <>
-            {/* สวิตช์เปิด/ปิดสถานะโพสต์ */}
-            <div className="flex items-center gap-4">
-              <Switch
-                checked={row.original.isActive}
-                onChange={() =>
-                  changeStatus(row.original.HealthArticleID, !row.original.isActive)
-                }
-                offColor="#888"
-                onColor="#4CAF50"
-                offHandleColor="#FFF"
-                onHandleColor="#FFF"
-                height={30}
-                width={60}
-              />
-            </div>
+            {row.original.medications.Contraindications}
           </>
-        ),
+        ), // แสดง id ของโพสต์
       },
       {
         header: "จัดการ",
         cell: ({ row }) => {
-          const isDisabled = row.original.AdminID !== userId;
-
           return (
             <div className="flex gap-2">
-              {/* ปุ่มดูข้อมูล */}
-              <button
-                onClick={() =>
-                  router.push(`/admin/dashboard/medic-treatment/${row.original.diseases.DiseaseID}`)
-                }
-                disabled={isDisabled}
-                className={`px-4 py-2 rounded-lg text-white ${
-                  isDisabled
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-sky-500 hover:bg-sky-600"
-                }`}
-              >
-                ดูข้อมูล
-              </button>
-              
               {/* ปุ่มแก้ไข */}
               <button
                 onClick={() =>
                   router.push(`/admin/dashboard/edit-post/${row.original.HealtaArticleID}`)
                 }
-                disabled={isDisabled}
-                className={`px-4 py-2 rounded-lg text-white ${
-                  isDisabled
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-orange-500 hover:bg-orange-600"
-                }`}
+                className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600`}
               >
                 แก้ไข
               </button>
@@ -266,12 +191,7 @@ export default function BlogManagement() {
                   setPostIdToDelete(row.original.HealtaArticleID);
                   setIsModalOpen(true);
                 }}
-                disabled={isDisabled}
-                className={`px-4 py-2 rounded-lg text-white ${
-                  isDisabled
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-red-500 hover:bg-red-600"
-                }`}
+                className={`px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600`}
               >
                 ลบ
               </button>
@@ -280,12 +200,12 @@ export default function BlogManagement() {
         },
       },
     ],
-    [router, userId]
+    [router]
   );
 
   // สร้าง instance ของ React Table โดยกำหนดข้อมูลและคอลัมน์ พร้อมเปิดใช้งาน pagination
   const table = useReactTable({
-    data: posts,
+    data: medics,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -305,17 +225,17 @@ export default function BlogManagement() {
   }
 
   return (
-    <div>
+    <div className="p-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        จัดการข่าวสาร
+        จัดการข้อมูลยาของโรค {medics[0]?.diseases?.DiseaseName}
       </h2>
 
       {/* ปุ่มเพิ่มโพสต์ เปลี่ยนหน้าไปยังฟอร์มเพิ่มโพสต์ */}
       <button
-        onClick={() => router.push("/admin/dashboard/add-post")}
+        onClick={() => router.push(`/admin/dashboard/add-medication/${id}`)}
         className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 hover:scale-105 mb-6"
       >
-        เพิ่มข้อมูล
+        + เพิ่มข้อมูล
       </button>
 
       {/* ตารางแสดงรายการโพสต์ */}
@@ -381,7 +301,7 @@ export default function BlogManagement() {
       </div>
 
       {/* Modal Confirm สำหรับยืนยันการลบโพสต์ */}
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <ModalConfirm
           isOpen={isModalOpen}
           title="ยืนยันการลบโพสต์"
@@ -391,7 +311,7 @@ export default function BlogManagement() {
           confirmText="ลบ"
           cancelText="ยกเลิก"
         />
-      )}
+      )} */}
     </div>
   );
 }
