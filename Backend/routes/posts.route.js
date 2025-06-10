@@ -8,6 +8,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
 
     // POST /posts - สร้างโพสต์ใหม่
     .post("/", async ({ body }) => {
+        console.log("Creating new post with body:", body);
         // ตรวจสอบว่า title ซ้ำหรือไม่
         const diseases = await prisma.diseases.findFirst({
             where : { DiseaseName : body.name }
