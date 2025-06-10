@@ -34,7 +34,7 @@ export default function AddPostPage() {
   const router = useRouter();
 
   // ตัว editor สำหรับเนื้อหาในฟิลด์หลัก
-  const editor = useEditor({
+  const riskfactorsEditor = useEditor({
     extensions: [StarterKit, Image.configure({ inline: true }), Underline],
     content: "",
     editorProps: {
@@ -47,7 +47,7 @@ export default function AddPostPage() {
   });
 
   // editor สำหรับอาการ
-  const symptomEditor = useEditor({
+  const symptomsEditor = useEditor({
     extensions: [StarterKit, Image.configure({ inline: true }), Underline],
     content: "",
     editorProps: {
@@ -56,10 +56,11 @@ export default function AddPostPage() {
           "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[150px]",
       },
     },
+    immediatelyRender: false,
   });
 
   // editor สำหรับสถานการณ์
-  const situationEditor = useEditor({
+  const diagnosisEditor = useEditor({
     extensions: [StarterKit, Image.configure({ inline: true }), Underline],
     content: "",
     editorProps: {
@@ -68,10 +69,11 @@ export default function AddPostPage() {
           "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[150px]",
       },
     },
+    immediatelyRender: false,
   });
 
   // editor สำหรับการป้องกัน
-  const protectionEditor = useEditor({
+  const preventionEditor = useEditor({
     extensions: [StarterKit, Image.configure({ inline: true }), Underline],
     content: "",
     editorProps: {
@@ -80,6 +82,7 @@ export default function AddPostPage() {
           "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[150px]",
       },
     },
+    immediatelyRender: false,
   });
 
   useEffect(() => {
@@ -143,7 +146,7 @@ export default function AddPostPage() {
   const handleCoverImageUpload = async (file) => {
     const imageUrl = await handleImageUpload(file);
     if (imageUrl) {
-      setCoverImage(imageUrl);
+      setImageUrl(imageUrl);
     }
   };
 
@@ -162,10 +165,10 @@ export default function AddPostPage() {
     setIsLoading(true);
 
     try {
-      const content = editor?.getHTML() || "";
-      const symptom = symptomEditor?.getHTML() || "";
-      const situation = situationEditor?.getHTML() || "";
-      const protection = protectionEditor?.getHTML() || "";
+      const risk_factors = riskfactorsEditor?.getHTML() || "";
+      const symptoms = symptomsEditor?.getHTML() || "";
+      const diagnosis = diagnosisEditor?.getHTML() || "";
+      const prevention = preventionEditor?.getHTML() || "";
 
       const user = Cookies.get("user");
       if (!user) {
@@ -309,9 +312,27 @@ export default function AddPostPage() {
             </label>
             <input
               type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนหัวข้อ"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="description"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              รายละเอียด
+            </label>
+            <input
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนหัวข้อ"
@@ -369,7 +390,7 @@ export default function AddPostPage() {
             <p className="text-gray-500">ลากและวางหรือเลือกไฟล์</p>
             {coverImage && (
               <img
-                src={coverImage}
+                src={imageUrl}
                 alt="Cover"
                 className="max-w-xs max-h-60 w-full h-auto mx-auto rounded-lg mt-4 object-cover shadow"
               />
@@ -398,22 +419,22 @@ export default function AddPostPage() {
         {/* วิดีโอ */}
         <div>
           <label
-            htmlFor="videoLink"
+            htmlFor="videoUrl"
             className="block text-lg font-medium text-gray-700 mb-2"
           >
             ลิงก์วิดีโอแนะนำ
           </label>
           <input
             type="url"
-            id="videoLink"
-            value={videoLink}
-            onChange={(e) => setVideoLink(e.target.value)}
+            id="videoUrl"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
             className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
             placeholder="กรอกลิงก์วิดีโอแนะนำ"
           />
-          {videoLink && (
+          {videoUrl && (
             <div className="mt-4 aspect-video w-full max-w-xl mx-auto rounded-lg overflow-hidden shadow-lg">
-              {renderVideoPreview(videoLink)}
+              {renderVideoPreview(videoUrl)}
             </div>
           )}
         </div>
@@ -479,7 +500,7 @@ export default function AddPostPage() {
         {/* แท็บแก้ไขเนื้อหา */}
         <div className="mt-6">
           <div className="flex gap-4 mb-4 border-b border-gray-200">
-            {["edit", "symptom", "situation", "protection"].map((tab) => (
+            {["riskfactor", "symptoms", "diagnosis", "prevention"].map((tab) => (
               <button
                 type="button"
                 key={tab}
@@ -489,11 +510,11 @@ export default function AddPostPage() {
                     : "text-gray-500 hover:text-indigo-600"
                   }`}
               >
-                {tab === "edit"
+                {tab === "riskfactor"
                   ? "รายละเอียดของโรค"
-                  : tab === "symptom"
+                  : tab === "symptoms"
                     ? "อาการ"
-                    : tab === "situation"
+                    : tab === "diagnosis"
                       ? "การติดต่อ"
                       : "ดูแล และ การป้องกัน"}
               </button>
@@ -501,49 +522,49 @@ export default function AddPostPage() {
           </div>
 
           {/* // แสดง Editor เฉพาะเมื่อแท็บที่เลือกคือ "edit" */}
-          {activeTab === "edit" && (
+          {activeTab === "riskfactor" && (
             <>
               {/* แถบเครื่องมือของ Editor (Toolbar) ที่เชื่อมกับอินสแตนซ์ของ editor หลัก */}
-              <RenderToolbar editorInstance={editor} />
+              <RenderToolbar editorInstance={riskfactorsEditor} />
               {/* พื้นที่เขียนเนื้อหาหลัก */}
-              <EditorContent editor={editor} className="border rounded-md p-4 min-h-[150px]" />
+              <EditorContent editor={riskfactorsEditor} className="border rounded-md p-4 min-h-[150px]" />
             </>
           )}
 
           {/* แสดง Editor เฉพาะเมื่อแท็บที่เลือกคือ "symptom"*/}
-          {activeTab === "symptom" && (
+          {activeTab === "symptoms" && (
             <>
               {/* แถบเครื่องมือของ Editor สำหรับเนื้อหา 'อาการ' */}
-              <RenderToolbar editorInstance={symptomEditor} />
+              <RenderToolbar editorInstance={symptomsEditor} />
               {/* พื้นที่เขียนเนื้อหา 'อาการ' */}
               <EditorContent
-                editor={symptomEditor}
+                editor={symptomsEditor}
                 className="border rounded-md p-4 min-h-[100px]"
               />
             </>
           )}
 
 {/* // แสดง Editor เฉพาะเมื่อแท็บที่เลือกคือ "situation" */}
-          {activeTab === "situation" && (
+          {activeTab === "diagnosis" && (
             <>
               {/* แถบเครื่องมือของ Editor สำหรับเนื้อหา 'สถานการณ์' */}
-              <RenderToolbar editorInstance={situationEditor} />
+              <RenderToolbar editorInstance={diagnosisEditor} />
               {/* พื้นที่เขียนเนื้อหา 'สถานการณ์' */}
               <EditorContent
-                editor={situationEditor}
+                editor={diagnosisEditor}
                 className="border rounded-md p-4 min-h-[100px]"
               />
             </>
           )}
 
 {/* // แสดง Editor เฉพาะเมื่อแท็บที่เลือกคือ "protection" */}
-          {activeTab === "protection" && (
+          {activeTab === "prevention" && (
             <>
               {/* แถบเครื่องมือของ Editor สำหรับเนื้อหา 'การป้องกัน' */}
-              <RenderToolbar editorInstance={protectionEditor} />
+              <RenderToolbar editorInstance={preventionEditor} />
               {/* พื้นที่เขียนเนื้อหา 'การป้องกัน' */}
               <EditorContent
-                editor={protectionEditor}
+                editor={preventionEditor}
                 className="border rounded-md p-4 min-h-[100px]"
               />
             </>
