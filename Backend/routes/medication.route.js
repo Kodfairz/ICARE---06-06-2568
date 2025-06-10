@@ -8,6 +8,19 @@ export const MedicationsRoutes = new Elysia({ prefix: "/medics" })
 
 // GET /medics
     .get("/:id", async ({ params }) => {
+        const medics = await prisma.medications.findFirst({
+            where: {
+                MedicationID: Number(params.id)
+            }
+        })
+
+        if(!medics) throw new Error("ไม่สามารถเรียกข้อมูลได้");
+
+        return { "resultData" : medics };
+    })
+
+// GET /medics
+    .get("/diseases/:id", async ({ params }) => {
         const medics = await prisma.disease_medications.findMany({
             where: {
                 DiseaseID: Number(params.id)
@@ -47,4 +60,39 @@ export const MedicationsRoutes = new Elysia({ prefix: "/medics" })
         if(!medics || !diseaseMedic) throw new Error("ไม่สามารถบันทึกข้อมูลได้");
 
         return { "resultData" : medics };
+    })
+
+// PUT /diseases/medics/:id
+    .put("/:id", async ({ params, body }) => {
+        const medics = await prisma.medications.update({
+            where: {
+                MedicationID: Number(params.id)
+            },
+            data: {
+                MedicationName: body.medic_name,
+                GenericName: body.generic_name,
+                DosageForm: body.dosage,
+                Strength: body.strength,
+                Indications: body.indication,
+                SideEffects: body.side_effect,
+                Contraindications: body.contraindication,
+            }
+        })
+
+        if(!medics) throw new Error("ไม่สามารถบันทึกข้อมูลได้");
+
+        return { "resultData" : medics };
+    })
+
+// DELETE /medics/:id
+    .delete("/:id", async ({ params }) => {
+        const medics = await prisma.medications.delete({
+            where: {
+                MedicationID: Number(params.id)
+            }
+        })
+
+        if(!medics) throw new Error("ไม่สามารถลบข้อมูลได้");
+
+        return { "message" : "ลบข้อมูลสำเร็จ" };
     })

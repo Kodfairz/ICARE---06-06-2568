@@ -27,12 +27,12 @@ import { API } from "../../../../../service/api";
 import { toast } from "react-toastify";
 // นำเข้า toast สำหรับแสดงข้อความแจ้งเตือนสถานะต่าง ๆ
 
-// import ModalConfirm from "@/app/components/ModalConfirm";  // เพิ่ม import ModalConfirm
-// // นำเข้า ModalConfirm สำหรับ modal ยืนยันการลบข้อมูล
+import ModalConfirm from "../../../../../components/ModalConfirm";  // เพิ่ม import ModalConfirm
+// นำเข้า ModalConfirm สำหรับ modal ยืนยันการลบข้อมูล
 
-// import {Tabs, Tab} from "@heroui/tabs";
+import {Tabs, Tab} from "@heroui/tabs";
 
-export default function Medic_Treatment_Table() {
+export default function Medic_Treatment() {
   const { id } = useParams();
   const router = useRouter();
   // ใช้สำหรับเปลี่ยนหน้า
@@ -41,15 +41,24 @@ export default function Medic_Treatment_Table() {
   // สถานะเก็บ id ของผู้ใช้ที่ล็อกอินอยู่
 
   const [medics, setMedics] = useState([]);
-  // สถานะเก็บข้อมูลโพสต์ที่ดึงมาจาก API
+  // สถานะเก็บข้อมูลข้อมูลยาที่ดึงมาจาก API
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [treatments, setTreatments] = useState([]);
+  // สถานะเก็บข้อมูลการรักษาที่ดึงมาจาก API
+
+  const [isModalMedicOpen, setIsModalMedicOpen] = useState(false);
+  // สถานะควบคุมการเปิด/ปิด modal ยืนยันการลบ
+
+  const [isModalTreatmentOpen, setIsModalTreatmentOpen] = useState(false);
   // สถานะควบคุมการเปิด/ปิด modal ยืนยันการลบ
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // เก็บ id ของโพสต์ที่ต้องการลบ
-  const [postIdToDelete, setPostIdToDelete] = useState(null);
+  const [medicIdToDelete, setMedicIdToDelete] = useState(null);
+  // เก็บ id ของข้อมูลยาที่ต้องการลบ
+
+  const [treatmentIdToDelete, setTreatmentIdToDelete] = useState(null);
+  // เก็บ id ของข้อมูลการรักษาที่ต้องการลบ
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -73,12 +82,12 @@ export default function Medic_Treatment_Table() {
     fetchUserId();
   }, []);
 
-  // ฟังก์ชันดึงข้อมูลโพสต์จาก API
+  // ฟังก์ชันดึงข้อมูลข้อมูลยาจาก API
   const getMedics = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API}/medics/${id}`);
-      setMedics(response.data.resultData); // เก็บข้อมูลโพสต์ลง state
+      const response = await axios.get(`${API}/medics/diseases/${id}`);
+      setMedics(response.data.resultData); // เก็บข้อมูลข้อมูลยาลง state
     } catch (error) {
       console.log(error);
       toast.error(error.response.message || "ไม่สามารถเรียกข้อมูลได้"); // แจ้งเตือนถ้าดึงข้อมูลไม่สำเร็จ
@@ -86,21 +95,49 @@ export default function Medic_Treatment_Table() {
     setIsLoading(false);
   };
 
-  // ดึงข้อมูลโพสต์ครั้งแรกตอน component โหลด
+  // ฟังก์ชันดึงข้อมูลข้อมูลยาจาก API
+  const getTreatments = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API}/treatments/diseases/${id}`);
+      setTreatments(response.data.resultData); // เก็บข้อมูลข้อมูลยาลง state
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.message || "ไม่สามารถเรียกข้อมูลได้"); // แจ้งเตือนถ้าดึงข้อมูลไม่สำเร็จ
+    }
+    setIsLoading(false);
+  };
+
+  // ดึงข้อมูลข้อมูลยาครั้งแรกตอน component โหลด
   useEffect(() => {
     if (userId) {
       getMedics();
+      getTreatments();
     }
   }, [userId]);
 
-  // ฟังก์ชันลบโพสต์ตาม id ที่เลือกไว้
-  const deletePost = async () => {
+  // ฟังก์ชันลบข้อมูลยาตาม id ที่เลือกไว้
+  const deleteMedic = async () => {
     try {
-      const response = await axios.delete(`${API}/posts/${postIdToDelete}`);
+      const response = await axios.delete(`${API}/medics/${medicIdToDelete}`);
       toast.success(response.data.message || "ลบข้อมูลสำเร็จแล้ว");
       getMedics(); // ดึงข้อมูลใหม่หลังลบเสร็จ
-      setIsModalOpen(false); // ปิด modal confirm
-      setPostIdToDelete(null); // ล้างค่า id ที่จะลบ
+      setIsModalMedicOpen(false); // ปิด modal confirm
+      setMedicIdToDelete(null); // ล้างค่า id ที่จะลบ
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.message || "ไม่สามารถลบข้อมูลได้");
+    }
+  };
+
+  // ฟังก์ชันลบข้อมูลยาตาม id ที่เลือกไว้
+  const deleteTreatment = async () => {
+    try {
+      const response = await axios.delete(`${API}/treatments/${treatmentIdToDelete}`);
+      toast.success(response.data.message || "ลบข้อมูลสำเร็จแล้ว");
+      getTreatments(); // ดึงข้อมูลใหม่หลังลบเสร็จ
+      setIsModalTreatmentOpen(false); // ปิด modal confirm
+      setTreatmentIdToDelete(null); // ล้างค่า id ที่จะลบ
     } catch (error) {
       console.log(error);
       toast.error(error.response.message || "ไม่สามารถลบข้อมูลได้");
@@ -108,11 +145,11 @@ export default function Medic_Treatment_Table() {
   };
 
   // กำหนดคอลัมน์สำหรับตาราง โดยใช้ useMemo เพื่อประสิทธิภาพไม่ให้สร้างใหม่ทุกครั้งที่ render
-  const columns = useMemo(
+  const columnsMedications = useMemo(
     () => [
       {
         header: "#",
-        accessorKey: "MedicationID", // แสดง id ของโพสต์
+        accessorKey: "MedicationID", // แสดง id ของข้อมูลยา
       },
       {
         header: "ชื่อยา",
@@ -120,7 +157,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.MedicationName}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "ชื่อสามัญ",
@@ -128,7 +165,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.GenericName}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "รูปแบบยา",
@@ -136,7 +173,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.DosageForm}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "ความแรงของยา",
@@ -144,7 +181,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.Strength}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "ข้อบ่งใช้",
@@ -152,7 +189,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.Indications}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "ผลข้างเคียง",
@@ -160,7 +197,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.SideEffects}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "ข้อห้ามใช้",
@@ -168,7 +205,7 @@ export default function Medic_Treatment_Table() {
           <>
             {row.original.medications.Contraindications}
           </>
-        ), // แสดง id ของโพสต์
+        ), // แสดง id ของข้อมูลยา
       },
       {
         header: "จัดการ",
@@ -178,7 +215,7 @@ export default function Medic_Treatment_Table() {
               {/* ปุ่มแก้ไข */}
               <button
                 onClick={() =>
-                  router.push(`/admin/dashboard/edit-post/${row.original.HealtaArticleID}`)
+                  router.push(`/admin/dashboard/edit-medication/${row.original.MedicationID}`)
                 }
                 className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600`}
               >
@@ -188,8 +225,96 @@ export default function Medic_Treatment_Table() {
               {/* ปุ่มลบ */}
               <button
                 onClick={() => {
-                  setPostIdToDelete(row.original.HealtaArticleID);
-                  setIsModalOpen(true);
+                  setMedicIdToDelete(row.original.MedicationID);
+                  setIsModalMedicOpen(true);
+                }}
+                className={`px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600`}
+              >
+                ลบ
+              </button>
+            </div>
+          );
+        },
+      },
+    ],
+    [router]
+  );
+
+  // กำหนดคอลัมน์สำหรับตาราง โดยใช้ useMemo เพื่อประสิทธิภาพไม่ให้สร้างใหม่ทุกครั้งที่ render
+  const columnsTreatments = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "TreatmentID", // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "ชื่อวิธีการรักษา",
+        cell: ({ row }) => (
+          <>
+            {row.original.treatments.TreatmentName}
+          </>
+        ), // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "คำอธิบายวิธีการรักษา",
+        cell: ({ row }) => (
+          <>
+            {row.original.treatments.Description}
+          </>
+        ), // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "ขั้นตอนการดำเนินการ",
+        cell: ({ row }) => (
+          <>
+            {row.original.treatments.Procedures}
+          </>
+        ), // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "ระยะเวลาในการรักษา",
+        cell: ({ row }) => (
+          <>
+            {row.original.treatments.Duration}
+          </>
+        ), // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "ผลข้างเคียง",
+        cell: ({ row }) => (
+          <>
+            {row.original.treatments.SideEffects}
+          </>
+        ), // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "ข้อห้ามใช้",
+        cell: ({ row }) => (
+          <>
+            {row.original.treatments.Contraindications}
+          </>
+        ), // แสดง id ของข้อมูลการรักษา
+      },
+      {
+        header: "จัดการ",
+        cell: ({ row }) => {
+          return (
+            <div className="flex gap-2">
+              {/* ปุ่มแก้ไข */}
+              <button
+                onClick={() =>
+                  router.push(`/admin/dashboard/edit-treatment/${row.original.TreatmentID}`)
+                }
+                className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600`}
+              >
+                แก้ไข
+              </button>
+
+              {/* ปุ่มลบ */}
+              <button
+                onClick={() => {
+                  setTreatmentIdToDelete(row.original.TreatmentID);
+                  setIsModalTreatmentOpen(true);
                 }}
                 className={`px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600`}
               >
@@ -204,9 +329,18 @@ export default function Medic_Treatment_Table() {
   );
 
   // สร้าง instance ของ React Table โดยกำหนดข้อมูลและคอลัมน์ พร้อมเปิดใช้งาน pagination
-  const table = useReactTable({
+  const tableMedications = useReactTable({
     data: medics,
-    columns,
+    columns: columnsMedications,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: 10 } }, // แสดง 10 แถวต่อหน้า
+  });
+
+  // สร้าง instance ของ React Table โดยกำหนดข้อมูลและคอลัมน์ พร้อมเปิดใช้งาน pagination
+  const tableTreatments = useReactTable({
+    data: treatments,
+    columns: columnsTreatments,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: { pagination: { pageSize: 10 } }, // แสดง 10 แถวต่อหน้า
@@ -226,92 +360,184 @@ export default function Medic_Treatment_Table() {
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        จัดการข้อมูลยาของโรค {medics[0]?.diseases?.DiseaseName}
-      </h2>
+      <Tabs aria-label="Options">
+        <Tab key="medications" title="จัดการข้อมูลยา">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            จัดการข้อมูลยาของโรค {medics[0]?.diseases?.DiseaseName}
+          </h2>
 
-      {/* ปุ่มเพิ่มโพสต์ เปลี่ยนหน้าไปยังฟอร์มเพิ่มโพสต์ */}
-      <button
-        onClick={() => router.push(`/admin/dashboard/add-medication/${id}`)}
-        className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 hover:scale-105 mb-6"
-      >
-        + เพิ่มข้อมูล
-      </button>
+          {/* ปุ่มเพิ่มข้อมูลยา เปลี่ยนหน้าไปยังฟอร์มเพิ่มข้อมูลยา */}
+          <button
+            onClick={() => router.push(`/admin/dashboard/add-medication/${id}`)}
+            className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 hover:scale-105 mb-6"
+          >
+            + เพิ่มข้อมูล
+          </button>
 
-      {/* ตารางแสดงรายการโพสต์ */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-indigo-600 text-white">
-            {/* สร้างหัวตาราง */}
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="p-4 text-left font-semibold text-sm uppercase tracking-wider"
+          {/* ตารางแสดงรายการข้อมูลยา */}
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-indigo-600 text-white">
+                {/* สร้างหัวตาราง */}
+                {tableMedications.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="p-4 text-left font-semibold text-sm uppercase tracking-wider"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+
+              <tbody className="divide-y divide-gray-200">
+                {/* แสดงข้อมูลแต่ละแถวในตาราง */}
+                {tableMedications.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="hover:bg-indigo-50 transition-all duration-200"
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </th>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="p-4 text-gray-700">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </thead>
+              </tbody>
+            </table>
+          </div>
 
-          <tbody className="divide-y divide-gray-200">
-            {/* แสดงข้อมูลแต่ละแถวในตาราง */}
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="hover:bg-indigo-50 transition-all duration-200"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-4 text-gray-700">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+          {/* แถบควบคุมการแบ่งหน้า */}
+          <div className="mt-6 flex flex-wrap gap-4 justify-between items-center">
+            <button
+              onClick={() => tableMedications.previousPage()}
+              disabled={!tableMedications.getCanPreviousPage()}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all duration-200"
+            >
+              Previous
+            </button>
+            <span className="text-gray-600">
+              Page {tableMedications.getState().pagination.pageIndex + 1} of{" "}
+              {tableMedications.getPageCount()}
+            </span>
+            <button
+              onClick={() => tableMedications.nextPage()}
+              disabled={!tableMedications.getCanNextPage()}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all duration-200"
+            >
+              Next
+            </button>
+          </div>
+        </Tab>
+        <Tab key="treatments" title="จัดการข้อมูลการรักษา">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            จัดการข้อมูลการรักษาของโรค {treatments[0]?.diseases?.DiseaseName}
+          </h2>
+
+          {/* ปุ่มเพิ่มข้อมูลการรักษา เปลี่ยนหน้าไปยังฟอร์มเพิ่มข้อมูลการรักษา */}
+          <button
+            onClick={() => router.push(`/admin/dashboard/add-treatment/${id}`)}
+            className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 hover:scale-105 mb-6"
+          >
+            + เพิ่มข้อมูล
+          </button>
+
+          {/* ตารางแสดงรายการข้อมูลการรักษา */}
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-indigo-600 text-white">
+                {/* สร้างหัวตาราง */}
+                {tableTreatments.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="p-4 text-left font-semibold text-sm uppercase tracking-wider"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </th>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </thead>
 
-      {/* แถบควบคุมการแบ่งหน้า */}
-      <div className="mt-6 flex flex-wrap gap-4 justify-between items-center">
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all duration-200"
-        >
-          Previous
-        </button>
-        <span className="text-gray-600">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-        <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all duration-200"
-        >
-          Next
-        </button>
-      </div>
+              <tbody className="divide-y divide-gray-200">
+                {/* แสดงข้อมูลแต่ละแถวในตาราง */}
+                {tableTreatments.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="hover:bg-indigo-50 transition-all duration-200"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="p-4 text-gray-700">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      {/* Modal Confirm สำหรับยืนยันการลบโพสต์ */}
-      {/* {isModalOpen && (
+          {/* แถบควบคุมการแบ่งหน้า */}
+          <div className="mt-6 flex flex-wrap gap-4 justify-between items-center">
+            <button
+              onClick={() => tableTreatments.previousPage()}
+              disabled={!tableTreatments.getCanPreviousPage()}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all duration-200"
+            >
+              Previous
+            </button>
+            <span className="text-gray-600">
+              Page {tableTreatments.getState().pagination.pageIndex + 1} of{" "}
+              {tableTreatments.getPageCount()}
+            </span>
+            <button
+              onClick={() => tableTreatments.nextPage()}
+              disabled={!tableTreatments.getCanNextPage()}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all duration-200"
+            >
+              Next
+            </button>
+          </div>
+        </Tab>
+      </Tabs>
+
+      {/* Modal Confirm สำหรับยืนยันการลบข้อมูลยา */}
+      {isModalMedicOpen && (
         <ModalConfirm
-          isOpen={isModalOpen}
-          title="ยืนยันการลบโพสต์"
-          message="คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้? การลบไม่สามารถย้อนกลับได้"
-          onConfirm={deletePost}
-          onCancel={() => setIsModalOpen(false)}
+          isOpen={isModalMedicOpen}
+          title="ยืนยันการลบข้อมูลยา"
+          message="คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลยานี้? การลบไม่สามารถย้อนกลับได้"
+          onConfirm={deleteMedic}
+          onCancel={() => setIsModalMedicOpen(false)}
           confirmText="ลบ"
           cancelText="ยกเลิก"
         />
-      )} */}
+      )}
+
+      {/* Modal Confirm สำหรับยืนยันการลบข้อมูลการรักษา */}
+      {isModalTreatmentOpen && (
+        <ModalConfirm
+          isOpen={isModalTreatmentOpen}
+          title="ยืนยันการลบข้อมูลการรักษา"
+          message="คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลการรักษานี้? การลบไม่สามารถย้อนกลับได้"
+          onConfirm={deleteTreatment}
+          onCancel={() => setIsModalTreatmentOpen(false)}
+          confirmText="ลบ"
+          cancelText="ยกเลิก"
+        />
+      )}
     </div>
   );
 }
