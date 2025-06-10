@@ -9,6 +9,8 @@ import BlogManagement from "../../../components/Admin/Blog/BlogManagement";
 import CategoryBlog from "../../../components/Admin/Blog/BlogCategory";
 import Comment from "../../../components/Admin/Comment";
 import VideoManagement from "../../../components/Admin/Video/VideoManagement";
+import ImageLibrary from "./image-library/page";
+import VideoLibrary from "./video-library/page";
 // นำเข้า Component ย่อยแต่ละส่วนของแดชบอร์ด เพื่อแสดงผลตามแท็บที่เลือก
 
 export default function AdminDashboard() {
@@ -27,7 +29,7 @@ export default function AdminDashboard() {
       {/* Tab Navigation */}
       <nav className="flex flex-wrap gap-2 mb-8 border-b border-gray-200">
         {/* แถบเมนูแท็บ จัดเรียงแนวนอน มีช่องว่างระหว่างปุ่ม และเส้นขอบล่าง */}
-        {["แอดมิน", "ข่าวสาร", "วิดีโอ", "ประเภทข้อมูล", "ข้อเสนอแนะ"].map((tab) => (
+        {["แอดมิน", "ข่าวสาร", "วิดีโอ", "ประเภทข้อมูล", "คลังรูปภาพ", "คลังวิดีโอ", "ข้อเสนอแนะ"].map((tab) => (
           // วนลูปสร้างปุ่มแท็บจากอาร์เรย์ชื่อแท็บ
           <button
             key={tab} // ใส่ key ให้แต่ละปุ่มเพื่อช่วย React จัดการ rendering
@@ -52,6 +54,8 @@ export default function AdminDashboard() {
         {activeTab === "ข่าวสาร" && <BlogManagement />}
         {activeTab == "วิดีโอ" && <VideoManagement />}
         {activeTab === "ประเภทข้อมูล" && <CategoryBlog />}
+        {activeTab === "คลังรูปภาพ" && <ImageLibrary />}
+        {activeTab === "คลังวิดีโอ" && <VideoLibrary />}
         {activeTab === "ข้อเสนอแนะ" && <Comment />}
         {/* แสดงคอมโพเนนต์ย่อยตามแท็บที่ถูกเลือก */}
       </section>

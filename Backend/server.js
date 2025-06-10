@@ -10,6 +10,8 @@ import { commentRoutes } from './routes/comments.route.js'
 import { videoRoutes } from './routes/video.route.js'
 import { MedicationsRoutes } from './routes/medication.route.js'
 import { TreatmentsRoutes } from './routes/treatment.route.js'
+import { ImageRoutes } from './routes/image-library.route.js'
+import { VideoRoutes } from './routes/video-library.route.js'
 
 const app = new Elysia({ adapter: node() })
 	.use(cors())
@@ -22,6 +24,8 @@ const app = new Elysia({ adapter: node() })
 	.use(videoRoutes)
 	.use(MedicationsRoutes)
 	.use(TreatmentsRoutes)
+	.use(ImageRoutes)
+	.use(VideoRoutes)
 
 	.listen(4000, ({ hostname, port }) => {
 		console.log(
