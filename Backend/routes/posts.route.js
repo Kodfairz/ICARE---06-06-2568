@@ -8,6 +8,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
 
     // POST /posts - สร้างโพสต์ใหม่
     .post("/", async ({ body }) => {
+        console.log("Creating new post with body:", body);
         // ตรวจสอบว่า title ซ้ำหรือไม่
         const diseases = await prisma.diseases.findFirst({
             where : { DiseaseName : body.name }
@@ -48,10 +49,10 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
         // สร้างโพสต์ใหม่
         const newPost = await prisma.healtharticles.create({
             data : {
-                DiseaseID : newDisease.id,
+                DiseaseID : newDisease.DiseaseID,
                 AdminID : Number(body.admin_id),
-                ImageID : newImage.id,
-                VideoID : newVideo.id,
+                ImageID : newImage.ImageID,
+                VideoID : newVideo.VideoID,
                 Views : 0,
                 isActive : body.isActive,
             }
@@ -92,7 +93,20 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
     .get("/admin", async () => {
         const healtharticles = await prisma.healtharticles.findMany({
             include : {
-                diseases : true,
+                diseases : {
+                    include : {
+                        categories : true
+                    }
+                },
+                imagelibrary : true,
+                videolibrary : true,
+                articleedits : {
+                    orderBy : {
+                        EditDate : 'desc'
+                    },
+                    take : 1
+                },
+                admins : true,
             }
         })
 

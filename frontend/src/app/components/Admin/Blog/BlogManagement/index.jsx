@@ -110,6 +110,7 @@ export default function BlogManagement() {
     try {
       const response = await axios.patch(`${API}/posts/change-status/${id}`, {
         isActive: status,
+        admin_id: userId
       });
 
       toast.success(response.data.message || "เปลี่ยนสถานะสำเร็จแล้ว");
@@ -139,7 +140,7 @@ export default function BlogManagement() {
     () => [
       {
         header: "#",
-        accessorKey: "id", // แสดง id ของโพสต์
+        accessorKey: "HealthArticleID", // แสดง id ของโพสต์
       },
       {
         header: "หน้าปก",
@@ -147,8 +148,8 @@ export default function BlogManagement() {
           <>
             {/* แสดงรูปหน้าปกโพสต์ */}
             <img
-              src={row.original.cover_image_url}
-              alt={row.original.title}
+              src={row.original.imagelibrary.ImageURL}
+              alt={row.original.imagelibrary.ImageName}
               className="w-24 rounded-2xl"
             />
           </>
@@ -156,7 +157,11 @@ export default function BlogManagement() {
       },
       {
         header: "หัวข้อ",
-        accessorKey: "title", // แสดงหัวข้อโพสต์
+        cell: ({ row }) => (
+          <>
+            {row.original.diseases.DiseaseName}
+          </>
+        ),
       },
       {
         header: "ประเภทข้อมูล",
@@ -164,7 +169,7 @@ export default function BlogManagement() {
           <>
             {/* แสดงชื่อประเภทข้อมูลในรูปแบบ badge สีเขียว */}
             <p className="bg-green-500 text-white p-2 rounded-full text-center font-semibold shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 cursor-pointer">
-              {row.original.category.name}
+              {row.original.diseases.categories.CategoryName}
             </p>
           </>
         ),
@@ -174,7 +179,7 @@ export default function BlogManagement() {
         cell: ({ row }) => (
           <>
             {/* แสดงวันที่สร้างในรูปแบบวันที่เต็ม (เช่น 15 พฤษภาคม 2568) */}
-            <p>{dayjs(row.original.created_at).format("DD MMMM YYYY")}</p>
+            <p>{dayjs(row.original.Created_At).format("DD MMMM YYYY")}</p>
           </>
         ),
       },
@@ -183,7 +188,7 @@ export default function BlogManagement() {
         cell: ({ row }) => (
           <>
             {/* แสดงเวลาที่อัพเดทล่าสุดในรูปแบบ relative เช่น "2 ชั่วโมงที่แล้ว" */}
-            <p>{dayjs(row.original.updated_at).fromNow()}</p>
+            <p>{dayjs(row.original.articleedits.EditDate).fromNow()}</p>
           </>
         ),
       },
@@ -192,7 +197,7 @@ export default function BlogManagement() {
         cell: ({ row }) => (
           <>
             {/* แสดงชื่อคนที่โพสต์" */}
-            <p>{row.original.users_posts_user_idTousers.username}</p>
+            <p>{row.original.admins.AdminName}</p>
           </>
         ),
       },
@@ -205,7 +210,7 @@ export default function BlogManagement() {
               <Switch
                 checked={row.original.isActive}
                 onChange={() =>
-                  changeStatus(row.original.id, !row.original.isActive)
+                  changeStatus(row.original.HealthArticleID, !row.original.isActive)
                 }
                 offColor="#888"
                 onColor="#4CAF50"
@@ -221,14 +226,44 @@ export default function BlogManagement() {
       {
         header: "จัดการ",
         cell: ({ row }) => {
-          const isDisabled = row.original.user_id !== userId;
+          const isDisabled = row.original.AdminID !== userId;
 
           return (
             <div className="flex gap-2">
+              {/* ปุ่มเพิ่มข้อมูลยา */}
+              <button
+                onClick={() =>
+                  router.push(`/admin/dashboard/add-medication/${row.original.HealtaArticleID}`)
+                }
+                disabled={isDisabled}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isDisabled
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-sky-500 hover:bg-sky-600"
+                }`}
+              >
+                เพิ่มข้อมูลยา
+              </button>
+              
+              {/* ปุ่มเพิ่มข้อมูลการรักษา */}
+              <button
+                onClick={() =>
+                  router.push(`/admin/dashboard/add-treatment/${row.original.HealtaArticleID}`)
+                }
+                disabled={isDisabled}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isDisabled
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-sky-500 hover:bg-sky-600"
+                }`}
+              >
+                เพิ่มข้อมูลการรักษา
+              </button>
+              
               {/* ปุ่มแก้ไข */}
               <button
                 onClick={() =>
-                  router.push(`/admin/dashboard/edit-post/${row.original.id}`)
+                  router.push(`/admin/dashboard/edit-post/${row.original.HealtaArticleID}`)
                 }
                 disabled={isDisabled}
                 className={`px-4 py-2 rounded-lg text-white ${
@@ -243,7 +278,7 @@ export default function BlogManagement() {
               {/* ปุ่มลบ */}
               <button
                 onClick={() => {
-                  setPostIdToDelete(row.original.id);
+                  setPostIdToDelete(row.original.HealtaArticleID);
                   setIsModalOpen(true);
                 }}
                 disabled={isDisabled}

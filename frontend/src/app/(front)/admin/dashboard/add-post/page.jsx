@@ -20,9 +20,13 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
 
 export default function AddPostPage() {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
+  const [imageName, setImageName] = useState("");
   const [videoLink, setVideoLink] = useState("");
+  const [videoName, setVideoName] = useState("");
+  const [icd10Code, setIcd10Code] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("edit");
   const [categories, setCategories] = useState([]);
@@ -49,7 +53,7 @@ export default function AddPostPage() {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[100px]",
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[150px]",
       },
     },
   });
@@ -61,7 +65,7 @@ export default function AddPostPage() {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[100px]",
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[150px]",
       },
     },
   });
@@ -73,7 +77,7 @@ export default function AddPostPage() {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[100px]",
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none min-h-[150px]",
       },
     },
   });
@@ -172,17 +176,20 @@ export default function AddPostPage() {
       const userId = JSON.parse(user).id;
 
       const response = await axios.post(`${API}/posts`, {
-        title,
+        name: title,
+        description: description,
         category_id: category.toString(),
-        cover_image_url: coverImage,
-        video_link: videoLink,
-        content,
-        symptom,
-        situation,
-        protection,
+        image_url: coverImage,
+        image_name: imageName,
+        video_url: videoLink,
+        video_name: videoName,
+        icd10_code: icd10Code,
+        risk_factors: content,
+        symptoms: symptom,
+        diagnosis: situation,
+        prevention: protection,
         isActive: publishStatus,
-        user_id: userId,
-        user_update_id: userId,
+        admin_id: userId,
       });
       if (response.status === 200) {
         toast.success(response.data.message || "เพิ่มข้อมูลสำเร็จ!");
@@ -217,8 +224,8 @@ export default function AddPostPage() {
   };
 
   const categoryOptions = categories.map((cat) => ({
-    value: cat.id,
-    label: cat.name,
+    value: cat.CategoryID,
+    label: cat.CategoryName,
   }));
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -313,6 +320,24 @@ export default function AddPostPage() {
 
           <div>
             <label
+              htmlFor="description"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              คำอธิบาย
+            </label>
+            <input
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนคำอธิบาย"
+            />
+          </div>
+
+          <div>
+            <label
               htmlFor="category"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
@@ -341,7 +366,7 @@ export default function AddPostPage() {
             className="border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer rounded-lg"
           >
             <input {...getInputProps()} />
-            <p className="text-gray-500">ลากและวางหรือลือกไฟล์</p>
+            <p className="text-gray-500">ลากและวางหรือเลือกไฟล์</p>
             {coverImage && (
               <img
                 src={coverImage}
@@ -351,6 +376,24 @@ export default function AddPostPage() {
             )}
           </div>
         </div>
+
+        <div>
+            <label
+              htmlFor="imageName"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              ชื่อรูปภาพ
+            </label>
+            <input
+              type="text"
+              id="imageName"
+              value={imageName}
+              onChange={(e) => setImageName(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนชื่อรูปภาพ"
+            />
+          </div>
 
         {/* วิดีโอ */}
         <div>
@@ -373,6 +416,42 @@ export default function AddPostPage() {
               {renderVideoPreview(videoLink)}
             </div>
           )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="videoName"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
+            ชื่อวิดีโอ
+          </label>
+          <input
+            type="text"
+            id="videoName"
+            value={videoName}
+            onChange={(e) => setVideoName(e.target.value)}
+            required
+            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+            placeholder="ป้อนชื่อวิดีโอ"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="icd10Code"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
+            ICD10 Code
+          </label>
+          <input
+            type="text"
+            id="icd10Code"
+            value={icd10Code}
+            onChange={(e) => setIcd10Code(e.target.value)}
+            required
+            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+            placeholder="ป้อน ICD10 Code"
+          />
         </div>
 
         {/* สวิตช์สถานะ */}
