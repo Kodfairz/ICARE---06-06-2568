@@ -275,6 +275,21 @@ export default function BlogManagement() {
               >
                 ลบ
               </button>
+
+              {/* ปุ่มประวัติ */}
+              <button
+                onClick={() =>
+                  router.push(`/admin/dashboard/articles-edit/${row.original.HealthArticleID}`)
+                }
+                disabled={isDisabled}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isDisabled
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-yellow-500 hover:bg-yellow-600"
+                }`}
+              >
+                ประวัติ
+              </button>
             </div>
           );
         },

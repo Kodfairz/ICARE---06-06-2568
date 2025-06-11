@@ -257,3 +257,14 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
 
         return { "resultData" : healtharticles };
     })
+
+    // GET /posts/history/:id - ดูโพสต์เฉพาะ ID และเพิ่มยอด View
+    .get("/history/:id", async ({ params }) => {
+        const history = await prisma.articleedits.findMany({
+            where : { HealthArticleID : Number(params.id) },
+        })
+
+        if(!history) throw new Error("ไม่เจอข้อมูล");
+
+        return { "resultData" : history };
+    })
