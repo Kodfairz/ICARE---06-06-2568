@@ -19,13 +19,13 @@ model admins {
 }
 
 model articleedits {
-  EditID          Int             @id @default(autoincrement())
+  EditID          Int            @id @default(autoincrement())
   HealthArticleID Int
   AdminID         Int
-  EditDate        DateTime        @default(now()) @db.Timestamp(0)
-  EditDescription String?         @db.Text
-  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Cascade, onUpdate: Restrict, map: "articleedits_ibfk_1")
-  admins          admins?         @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "articleedits_ibfk_2")
+  EditDate        DateTime       @default(now()) @db.Timestamp(0)
+  EditDescription String?        @db.Text
+  healtharticles  healtharticles @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Cascade, onUpdate: Restrict, map: "articleedits_ibfk_1")
+  admins          admins         @relation(fields: [AdminID], references: [AdminID], onUpdate: Restrict, map: "articleedits_ibfk_2")
 
   @@index([AdminID], map: "AdminID")
   @@index([HealthArticleID], map: "HealthArticleID")
@@ -40,8 +40,8 @@ model categories {
 model disease_medications {
   DiseaseID    Int
   MedicationID Int
-  diseases     diseases    @relation(fields: [DiseaseID], references: [DiseaseID], onUpdate: Restrict, onDelete: Cascade, map: "disease_medications_ibfk_1")
-  medications  medications @relation(fields: [MedicationID], references: [MedicationID], onUpdate: Restrict, onDelete: Cascade, map: "disease_medications_ibfk_2")
+  diseases     diseases    @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Cascade, onUpdate: Restrict, map: "disease_medications_ibfk_1")
+  medications  medications @relation(fields: [MedicationID], references: [MedicationID], onDelete: Cascade, onUpdate: Restrict, map: "disease_medications_ibfk_2")
 
   @@id([DiseaseID, MedicationID])
   @@index([MedicationID], map: "MedicationID")
@@ -50,8 +50,8 @@ model disease_medications {
 model disease_treatments {
   DiseaseID   Int
   TreatmentID Int
-  diseases    diseases   @relation(fields: [DiseaseID], references: [DiseaseID], onUpdate: Restrict, onDelete: Cascade, map: "disease_treatments_ibfk_1")
-  treatments  treatments @relation(fields: [TreatmentID], references: [TreatmentID], onUpdate: Restrict, onDelete: Cascade, map: "disease_treatments_ibfk_2")
+  diseases    diseases   @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Cascade, onUpdate: Restrict, map: "disease_treatments_ibfk_1")
+  treatments  treatments @relation(fields: [TreatmentID], references: [TreatmentID], onDelete: Cascade, onUpdate: Restrict, map: "disease_treatments_ibfk_2")
 
   @@id([DiseaseID, TreatmentID])
   @@index([TreatmentID], map: "TreatmentID")
@@ -63,13 +63,13 @@ model diseases {
   Description         String?               @db.Text
   CategoryID          Int
   ICD10_Code          String?               @db.VarChar(20)
-  RiskFactors         String               @db.Text
-  Prevention          String               @db.Text
-  Symptoms            String               @db.Text
-  Diagnosis           String               @db.Text
+  RiskFactors         String                @db.Text
+  Prevention          String                @db.Text
+  Symptoms            String                @db.Text
+  Diagnosis           String                @db.Text
   disease_medications disease_medications[]
   disease_treatments  disease_treatments[]
-  categories          categories?           @relation(fields: [CategoryID], references: [CategoryID], onDelete: Restrict, onUpdate: Restrict, map: "diseases_ibfk_1")
+  categories          categories            @relation(fields: [CategoryID], references: [CategoryID], onUpdate: Restrict, map: "diseases_ibfk_1")
   healtharticles      healtharticles[]
 
   @@index([CategoryID], map: "CategoryID")
@@ -77,7 +77,7 @@ model diseases {
 
 model feedbacks {
   FeedbackID      Int             @id @default(autoincrement())
-  FeedbackText    String         @db.Text
+  FeedbackText    String          @db.Text
   CreatedAt       DateTime        @default(now()) @db.Timestamp(0)
   HealthArticleID Int?
   healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: SetNull, map: "feedbacks_ibfk_1")
@@ -96,10 +96,10 @@ model healtharticles {
   isActive        Boolean
   articleedits    articleedits[]
   feedbacks       feedbacks[]
-  diseases        diseases?      @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Cascade, onUpdate: Restrict, map: "healtharticles_ibfk_1")
-  imagelibrary    imagelibrary?  @relation(fields: [ImageID], references: [ImageID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_2")
-  videolibrary    videolibrary?  @relation(fields: [VideoID], references: [VideoID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_3")
-  admins          admins?        @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "healtharticles_ibfk_4")
+  diseases        diseases       @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Cascade, onUpdate: Restrict, map: "healtharticles_ibfk_1")
+  imagelibrary    imagelibrary   @relation(fields: [ImageID], references: [ImageID], onUpdate: Restrict, map: "healtharticles_ibfk_2")
+  videolibrary    videolibrary   @relation(fields: [VideoID], references: [VideoID], onUpdate: Restrict, map: "healtharticles_ibfk_3")
+  admins          admins         @relation(fields: [AdminID], references: [AdminID], onUpdate: Restrict, map: "healtharticles_ibfk_4")
 
   @@index([AdminID], map: "AdminID")
   @@index([DiseaseID], map: "DiseaseID")
@@ -139,22 +139,23 @@ model treatments {
 }
 
 model videoarticles {
-  VideoArticleID Int           @id @default(autoincrement())
+  VideoArticleID Int          @id @default(autoincrement())
   ImageID        Int
   VideoID        Int
   AdminID        Int
   Title          String
   Description    String
   Views          Int
-  CreatedAt      DateTime      @default(now()) @db.Timestamp(0)
-  UpdatedAt      DateTime      @updatedAt
+  CreatedAt      DateTime     @default(now()) @db.Timestamp(0)
+  UpdatedAt      DateTime     @updatedAt
   isActive       Boolean
-  videolibrary   videolibrary? @relation(fields: [VideoID], references: [VideoID], onDelete: Restrict, onUpdate: Restrict, map: "videoarticles_ibfk_1")
-  imagelibrary   imagelibrary? @relation(fields: [ImageID], references: [ImageID], onDelete: Restrict, onUpdate: Restrict, map: "imagearticles_ibfk_1")
-  admins         admins?       @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "videoarticles_ibfk_2")
+  imagelibrary   imagelibrary @relation(fields: [ImageID], references: [ImageID], onUpdate: Restrict, map: "imagearticles_ibfk_1")
+  videolibrary   videolibrary @relation(fields: [VideoID], references: [VideoID], onUpdate: Restrict, map: "videoarticles_ibfk_1")
+  admins         admins       @relation(fields: [AdminID], references: [AdminID], onUpdate: Restrict, map: "videoarticles_ibfk_2")
 
   @@index([VideoID], map: "VideoID")
   @@index([AdminID], map: "AdminID")
+  @@index([ImageID], map: "imagearticles_ibfk_1")
 }
 
 model videolibrary {
