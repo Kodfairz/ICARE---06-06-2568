@@ -30,6 +30,7 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         take: 6 ,                           // เอาแค่ 6 รายการ
         include : {
             videolibrary: true,              // รวมข้อมูลวิดีโอที่เกี่ยวข้อง
+            imagelibrary: true,
         },
         where : {
             isActive : true                  // เฉพาะวิดีโอที่ active เท่านั้น
@@ -136,7 +137,7 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
             imagelibrary: true,
         }
     })
-    
+
     return {
         "resultData" : video                 // ส่งข้อมูลวิดีโอกลับ
     }

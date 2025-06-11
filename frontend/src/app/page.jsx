@@ -25,13 +25,13 @@ import { toast } from 'react-toastify';
 export default function Home() {
   const [posts, setPosts] = useState([]);      // เก็บข้อมูลโพสต์แนะนำ
   const [comment, setComment] = useState("");  // เก็บข้อความคอมเมนต์
-  const [video, setVideo] = useState([]);      // เก็บข้อมูลวิดีโอแนะนำ
+  const [videos, setVideos] = useState([]);      // เก็บข้อมูลวิดีโอแนะนำ
 
   // ฟังก์ชันดึงวิดีโอแนะนำจาก API
-  const getVideo = async () => {
+  const getVideos = async () => {
     try {
       const response = await axios.get(`${API}/video/video-recommend`);
-      setVideo(response.data.resultData);  // เก็บข้อมูลวิดีโอใน state
+      setVideos(response.data.resultData);  // เก็บข้อมูลวิดีโอใน state
     } catch (error) {
       console.log(error);
       // แสดงข้อความผิดพลาดถ้าดึงวิดีโอไม่สำเร็จ
@@ -70,7 +70,7 @@ export default function Home() {
   // useEffect เรียกดึงข้อมูลโพสต์และวิดีโอเมื่อ component โหลดครั้งแรก
   useEffect(() => {
     getPosts();
-    getVideo();
+    getVideos();
   }, []);
 
   return (
@@ -94,19 +94,19 @@ export default function Home() {
 
         {/* ส่วนแสดงโพสต์แนะนำ */}
         <section className="text-center py-8">
-          <h3 className="text-xl text-white mb-10 px-4 py-2 bg-green-600 rounded-md max-w-sm ml-0 font-anakotmai">โรคภัยและอุบัติเหตุใกล้ตัว</h3>
+          <h3 className="text-xl text-white mb-10 px-4 py-2 bg-green-600 rounded-md w-full ml-0 font-anakotmai">โรคภัยและอุบัติเหตุใกล้ตัว</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             {posts.map((item, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center font-anakotmai">
                 <img
-                  src={item.cover_image_url}
-                  alt={item.title}
+                  src={item.imagelibrary.ImageURL}
+                  alt={item.imagelibrary.ImageName}
                   className="w-full h-auto max-h-48 object-contain rounded-xl mb-4"
                 />
-                <h4 className="text-lg text-gray-700 mb-2">{item.title}</h4>
-                <h5 className='mb-2'>ประเภทข้อมูล {item.category.name}</h5>
-                <Link href={`/post/${item.id}`} className="inline-block px-6 py-2 text-white bg-blue-500 rounded-md transition duration-300 transform hover:bg-blue-700 hover:scale-105 font-anakotmai">
+                <h4 className="text-lg text-gray-700 mb-2">{item.diseases.DiseaseName}</h4>
+                <h5 className='mb-2'>ประเภทข้อมูล {item.diseases.categories.CategoryName}</h5>
+                <Link href={`/post/${item.HealthArticleID}`} className="inline-block px-6 py-2 text-white bg-blue-500 rounded-md transition duration-300 transform hover:bg-blue-700 hover:scale-105 font-anakotmai">
                   ดูข้อมูล
                 </Link>
               </div>
@@ -122,24 +122,24 @@ export default function Home() {
         </div>
 
         {/* ส่วนแสดงวิดีโอแนะนำ */}
-        <h3 className="text-xl text-white mb-10 px-4 py-2 bg-[#006699] rounded-md max-w-sm ml-0 text-center font-anakotmai">
+        <h3 className="text-xl text-white mb-10 px-4 py-2 bg-[#006699] rounded-md w-full ml-0 text-center font-anakotmai">
           วิดีโอแนะนำสำหรับปัญหายอดฮิต
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          {video.map((item, index) => (
+          {videos.map((item, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center font-anakotmai">
               {/* แสดงภาพ Thumbnail จาก YouTube */}
               <img
-                src={item.thumbnail_url}
-                alt={item.title}
+                src={item.imagelibrary.ImageURL}
+                alt={item.imagelibrary.ImageName}
                 className="w-full h-auto max-h-48 object-contain rounded-md mb-4"
               />
               {/* แสดงชื่อวิดีโอ */}
-              <h4 className="text-lg text-gray-700 mb-2">{item.title}</h4>
+              <h4 className="text-lg text-gray-700 mb-2">{item.Title}</h4>
               {/* ปุ่มลิงก์ไปยังหน้าวิดีโอ */}
               <Link
-                href={`/video/${item.id}`}
+                href={`/video/${item.VideoArticleID}`}
                 className="inline-block px-6 py-2 text-white bg-blue-500 rounded-md transition duration-300 transform hover:bg-blue-700 hover:scale-105 font-anakotmai"
               >
                 ดูวิดีโอ
@@ -171,7 +171,7 @@ export default function Home() {
             <h4 className="text-xl font-bold text-blue-300 mb-4">ติดต่อเรา</h4>
             <p className="flex items-center space-x-2">
               <span role="img" aria-label="email">📧</span>
-              <span>อีเมล: nuseroomfitf@gmail.com</span>
+              <span>อีเมล: nuseroomfitm@gmail.com</span>
             </p>
             <p className="flex items-center space-x-2">
               <span role="img" aria-label="phone">📞</span>
