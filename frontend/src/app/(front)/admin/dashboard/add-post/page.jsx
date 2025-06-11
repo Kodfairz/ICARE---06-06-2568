@@ -27,7 +27,7 @@ export default function AddPostPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(null);
   const [imageId, setImageId] = useState(null);
-  const [videoId, setVideoId] = useState("");
+  const [videoId, setVideoId] = useState(null);
   const [icd10Code, setIcd10Code] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [publishStatus, setPublishStatus] = useState(true);

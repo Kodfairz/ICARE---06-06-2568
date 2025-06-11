@@ -248,7 +248,7 @@ export default function BlogManagement() {
               {/* ปุ่มแก้ไข */}
               <button
                 onClick={() =>
-                  router.push(`/admin/dashboard/edit-post/${row.original.HealtaArticleID}`)
+                  router.push(`/admin/dashboard/edit-post/${row.original.HealthArticleID}`)
                 }
                 disabled={isDisabled}
                 className={`px-4 py-2 rounded-lg text-white ${

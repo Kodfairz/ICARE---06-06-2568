@@ -30,29 +30,29 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
             }
         })
 
-        // สร้างรูปใหม่
-        const newImage = await prisma.imagelibrary.create({
-            data : {
-                ImageName : body.image_name,
-                ImageURL : body.image_url,
-            }
-        })
+        // // สร้างรูปใหม่
+        // const newImage = await prisma.imagelibrary.create({
+        //     data : {
+        //         ImageName : body.image_name,
+        //         ImageURL : body.image_url,
+        //     }
+        // })
 
-        // สร้างวิดีโอใหม่
-        const newVideo = await prisma.videolibrary.create({
-            data : {
-                VideoName : body.video_name,
-                VideoURL : body.video_url,
-            }
-        })
+        // // สร้างวิดีโอใหม่
+        // const newVideo = await prisma.videolibrary.create({
+        //     data : {
+        //         VideoName : body.video_name,
+        //         VideoURL : body.video_url,
+        //     }
+        // })
 
         // สร้างโพสต์ใหม่
         const newPost = await prisma.healtharticles.create({
             data : {
                 DiseaseID : newDisease.DiseaseID,
                 AdminID : Number(body.admin_id),
-                ImageID : newImage.ImageID,
-                VideoID : newVideo.VideoID,
+                ImageID : Number(body.image_id),
+                VideoID : Number(body.video_id),
                 Views : 0,
                 isActive : body.isActive,
             }
@@ -79,7 +79,15 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
     .get("/post-recommend", async () => {
         const healtharticles = await prisma.healtharticles.findMany({
             orderBy: { Views: 'desc' },
-            include : { diseases : true },
+            include : {
+                diseases : {
+                    include : {
+                        categories : true
+                    }
+                },
+                imagelibrary : true,
+                videolibrary : true,
+            },
             where : { isActive : true },
             take: 6 
         });
@@ -170,6 +178,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
             where : { HealthArticleID : Number(params.id) },
             include: {
                 diseases: true,
+                videolibrary: true,
             }
         })
 
@@ -180,6 +189,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
 
     // PUT /posts/:id - แก้ไขข้อมูลโพสต์
     .put("/:id", async ({ body, params }) => {
+        console.log(body)
         const healtharticles = await prisma.healtharticles.findFirst({
             where : { DiseaseID : Number(params.id) }
         })
@@ -187,17 +197,28 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
         if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
         const updateDisease = await prisma.diseases.update({
-            where: { DiseaseID: healtharticles.DiseaseID },
+            where: { DiseaseID: Number(params.id) },
             data: {
                 DiseaseName: body.name,
                 Description: body.description,
-                CategoryID: Number(body.category_id),
+                categories: {
+                    connect: { CategoryID: 5 }
+                },
                 RiskFactors: body.risk_factors,
                 Prevention: body.prevention,
                 Symptoms: body.symptoms,
                 Diagnosis: body.diagnosis,
                 ICD10_Code: body.icd10_code,
-                isActive: body.isActive
+            }
+        })
+
+        const updateHealthArticles = await prisma.healtharticles.update({
+            where: { HealthArticleID: healtharticles.HealthArticleID },
+            data: {
+                AdminID: Number(body.admin_id),
+                ImageID: Number(body.image_id),
+                VideoID: Number(body.video_id),
+                isActive: body.isActive,
             }
         })
 
@@ -209,7 +230,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
             }
         })
 
-        if(!updateDisease) throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+        if(!updateDisease || !updateHealthArticles) throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
 
         return { "message" : "แก้ไขข้อมูลสำเร็จ" };
     })
