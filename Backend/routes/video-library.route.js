@@ -32,7 +32,12 @@ export const VideoRoutes = new Elysia({ prefix: "/videos" })
     .post("/", async ({ body }) => {
         // ตรวจสอบว่า title ซ้ำหรือไม่
         const video = await prisma.videolibrary.findFirst({
-            where : { VideoName : body.video_name }
+            where : {
+                OR: [
+                    { VideoName: body.video_name },
+                    { VideoURL: body.video_url }
+                ]
+            }
         })
 
         if(video) throw new Error("มีข้อมูลนี้แล้ว");
