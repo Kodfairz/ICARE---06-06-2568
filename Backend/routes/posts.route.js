@@ -153,21 +153,36 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
 
     // DELETE /posts/:id - ลบโพสต์
     .delete("/:id", async ({ params }) => {
+        console.log(params)
         const healtharticles = await prisma.healtharticles.findFirst({
             where : { HealthArticleID : Number(params.id) }
         })
 
         if(!healtharticles) throw new Error("ไม่เจอข้อมูล");
 
-        const deleteHealtharticles = await prisma.healtharticles.delete({
-            where : { HealthArticleID : Number(params.id) }
+        const deleteDisease = await prisma.diseases.delete({
+            where: { DiseaseID: healtharticles.DiseaseID }
         })
 
-        const deleteDeseases = await prisma.diseases.delete({
-            where: { id: healtharticles.DiseaseID }
-        })
+        // ลบ medications ที่ไม่มีโรคอื่นใช้อยู่
+        await prisma.medications.deleteMany({
+            where: {
+                disease_medications: {
+                    none: {} // ไม่มีการเชื่อมโยงกับ disease อื่นๆ
+                }
+            }
+        });
 
-        if(!deleteHealtharticles) throw new Error("ไม่สามารถลบข้อมูลได้");
+        // ลบ treatments ที่ไม่มีโรคอื่นใช้อยู่
+        await prisma.treatments.deleteMany({
+            where: {
+                disease_treatments: {
+                    none: {}
+                }
+            }
+        });
+
+        if(!deleteDisease) throw new Error("ไม่สามารถลบข้อมูลได้");
 
         return { "message" : "ลบข้อมูลสำเร็จ" };
     })
