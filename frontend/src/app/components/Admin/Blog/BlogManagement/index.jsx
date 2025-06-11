@@ -27,7 +27,7 @@ import { API } from "../../../../service/api";
 import { toast } from "react-toastify";
 // นำเข้า toast สำหรับแสดงข้อความแจ้งเตือนสถานะต่าง ๆ
 
-import * as dayjs from "dayjs";
+import dayjs from 'dayjs';
 // นำเข้า dayjs สำหรับจัดการวันที่และเวลา
 
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -185,12 +185,10 @@ export default function BlogManagement() {
       },
       {
         header: "อัพเดทล่าสุด",
-        cell: ({ row }) => (
-          <>
-            {/* แสดงเวลาที่อัพเดทล่าสุดในรูปแบบ relative เช่น "2 ชั่วโมงที่แล้ว" */}
-            <p>{dayjs(row.original.articleedits.EditDate).fromNow()}</p>
-          </>
-        ),
+        cell: ({ row }) => {
+          const relative = dayjs(row.original.articleedits.EditDate).locale('th').fromNow();
+          return <>{relative}</>;
+        },
       },
       {
         header: "โพสต์โดย",
