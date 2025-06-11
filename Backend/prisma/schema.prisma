@@ -20,8 +20,8 @@ model admins {
 
 model articleedits {
   EditID          Int             @id @default(autoincrement())
-  HealthArticleID Int?
-  AdminID         Int?
+  HealthArticleID Int
+  AdminID         Int
   EditDate        DateTime        @default(now()) @db.Timestamp(0)
   EditDescription String?         @db.Text
   healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: Restrict, map: "articleedits_ibfk_1")
@@ -77,9 +77,9 @@ model diseases {
 
 model feedbacks {
   FeedbackID      Int             @id @default(autoincrement())
-  FeedbackText    String?         @db.Text
+  FeedbackText    String         @db.Text
   CreatedAt       DateTime        @default(now()) @db.Timestamp(0)
-  HealthArticleID Int?
+  HealthArticleID Int
   healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: Restrict, map: "feedbacks_ibfk_1")
 
   @@index([HealthArticleID], map: "HealthArticleID")
@@ -87,11 +87,11 @@ model feedbacks {
 
 model healtharticles {
   HealthArticleID Int            @id @default(autoincrement())
-  DiseaseID       Int?
-  AdminID         Int?
-  ImageID         Int?
-  VideoID         Int?
-  Views           Int?
+  DiseaseID       Int
+  AdminID         Int
+  ImageID         Int
+  VideoID         Int
+  Views           Int
   CreatedAt       DateTime       @default(now()) @db.Timestamp(0)
   isActive        Boolean
   articleedits    articleedits[]
@@ -112,6 +112,7 @@ model imagelibrary {
   ImageName      String           @db.VarChar(255)
   ImageURL       String           @db.VarChar(255)
   healtharticles healtharticles[]
+  videoarticles  videoarticles[]
 }
 
 model medications {
@@ -139,12 +140,17 @@ model treatments {
 
 model videoarticles {
   VideoArticleID Int           @id @default(autoincrement())
-  VideoID        Int?
-  AdminID        Int?
-  Views          Int?
+  ImageID        Int
+  VideoID        Int
+  AdminID        Int
+  Title          String
+  Description    String
+  Views          Int
   CreatedAt      DateTime      @default(now()) @db.Timestamp(0)
+  UpdatedAt      DateTime      @updatedAt
   isActive       Boolean
   videolibrary   videolibrary? @relation(fields: [VideoID], references: [VideoID], onDelete: Restrict, onUpdate: Restrict, map: "videoarticles_ibfk_1")
+  imagelibrary   imagelibrary? @relation(fields: [ImageID], references: [ImageID], onDelete: Restrict, onUpdate: Restrict, map: "imagearticles_ibfk_1")
   admins         admins?       @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "videoarticles_ibfk_2")
 
   @@index([VideoID], map: "VideoID")
