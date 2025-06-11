@@ -24,7 +24,7 @@ model articleedits {
   AdminID         Int
   EditDate        DateTime        @default(now()) @db.Timestamp(0)
   EditDescription String?         @db.Text
-  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: Restrict, map: "articleedits_ibfk_1")
+  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Cascade, onUpdate: Restrict, map: "articleedits_ibfk_1")
   admins          admins?         @relation(fields: [AdminID], references: [AdminID], onDelete: Restrict, onUpdate: Restrict, map: "articleedits_ibfk_2")
 
   @@index([AdminID], map: "AdminID")
@@ -79,8 +79,8 @@ model feedbacks {
   FeedbackID      Int             @id @default(autoincrement())
   FeedbackText    String         @db.Text
   CreatedAt       DateTime        @default(now()) @db.Timestamp(0)
-  HealthArticleID Int
-  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: Restrict, map: "feedbacks_ibfk_1")
+  HealthArticleID Int?
+  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: SetNull, map: "feedbacks_ibfk_1")
 
   @@index([HealthArticleID], map: "HealthArticleID")
 }

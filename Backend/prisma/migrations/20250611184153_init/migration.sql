@@ -12,8 +12,8 @@ CREATE TABLE `admins` (
 -- CreateTable
 CREATE TABLE `articleedits` (
     `EditID` INTEGER NOT NULL AUTO_INCREMENT,
-    `HealthArticleID` INTEGER NULL,
-    `AdminID` INTEGER NULL,
+    `HealthArticleID` INTEGER NOT NULL,
+    `AdminID` INTEGER NOT NULL,
     `EditDate` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `EditDescription` TEXT NULL,
 
@@ -53,12 +53,12 @@ CREATE TABLE `diseases` (
     `DiseaseID` INTEGER NOT NULL AUTO_INCREMENT,
     `DiseaseName` VARCHAR(255) NOT NULL,
     `Description` TEXT NULL,
-    `CategoryID` INTEGER NULL,
+    `CategoryID` INTEGER NOT NULL,
     `ICD10_Code` VARCHAR(20) NULL,
-    `RiskFactors` TEXT NULL,
-    `Prevention` TEXT NULL,
-    `Symptoms` TEXT NULL,
-    `Diagnosis` TEXT NULL,
+    `RiskFactors` TEXT NOT NULL,
+    `Prevention` TEXT NOT NULL,
+    `Symptoms` TEXT NOT NULL,
+    `Diagnosis` TEXT NOT NULL,
 
     INDEX `CategoryID`(`CategoryID`),
     PRIMARY KEY (`DiseaseID`)
@@ -67,7 +67,7 @@ CREATE TABLE `diseases` (
 -- CreateTable
 CREATE TABLE `feedbacks` (
     `FeedbackID` INTEGER NOT NULL AUTO_INCREMENT,
-    `FeedbackText` TEXT NULL,
+    `FeedbackText` TEXT NOT NULL,
     `CreatedAt` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `HealthArticleID` INTEGER NULL,
 
@@ -78,11 +78,11 @@ CREATE TABLE `feedbacks` (
 -- CreateTable
 CREATE TABLE `healtharticles` (
     `HealthArticleID` INTEGER NOT NULL AUTO_INCREMENT,
-    `DiseaseID` INTEGER NULL,
-    `AdminID` INTEGER NULL,
-    `ImageID` INTEGER NULL,
-    `VideoID` INTEGER NULL,
-    `Views` INTEGER NULL,
+    `DiseaseID` INTEGER NOT NULL,
+    `AdminID` INTEGER NOT NULL,
+    `ImageID` INTEGER NOT NULL,
+    `VideoID` INTEGER NOT NULL,
+    `Views` INTEGER NOT NULL,
     `CreatedAt` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `isActive` BOOLEAN NOT NULL,
 
@@ -132,10 +132,14 @@ CREATE TABLE `treatments` (
 -- CreateTable
 CREATE TABLE `videoarticles` (
     `VideoArticleID` INTEGER NOT NULL AUTO_INCREMENT,
-    `VideoID` INTEGER NULL,
-    `AdminID` INTEGER NULL,
-    `Views` INTEGER NULL,
+    `ImageID` INTEGER NOT NULL,
+    `VideoID` INTEGER NOT NULL,
+    `AdminID` INTEGER NOT NULL,
+    `Title` VARCHAR(191) NOT NULL,
+    `Description` VARCHAR(191) NOT NULL,
+    `Views` INTEGER NOT NULL,
     `CreatedAt` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `UpdatedAt` DATETIME(3) NOT NULL,
     `isActive` BOOLEAN NOT NULL,
 
     INDEX `VideoID`(`VideoID`),
@@ -153,7 +157,7 @@ CREATE TABLE `videolibrary` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `articleedits` ADD CONSTRAINT `articleedits_ibfk_1` FOREIGN KEY (`HealthArticleID`) REFERENCES `healtharticles`(`HealthArticleID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `articleedits` ADD CONSTRAINT `articleedits_ibfk_1` FOREIGN KEY (`HealthArticleID`) REFERENCES `healtharticles`(`HealthArticleID`) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `articleedits` ADD CONSTRAINT `articleedits_ibfk_2` FOREIGN KEY (`AdminID`) REFERENCES `admins`(`AdminID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
@@ -174,7 +178,7 @@ ALTER TABLE `disease_treatments` ADD CONSTRAINT `disease_treatments_ibfk_2` FORE
 ALTER TABLE `diseases` ADD CONSTRAINT `diseases_ibfk_1` FOREIGN KEY (`CategoryID`) REFERENCES `categories`(`CategoryID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`HealthArticleID`) REFERENCES `healtharticles`(`HealthArticleID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`HealthArticleID`) REFERENCES `healtharticles`(`HealthArticleID`) ON DELETE RESTRICT ON UPDATE SET NULL;
 
 -- AddForeignKey
 ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `diseases`(`DiseaseID`) ON DELETE CASCADE ON UPDATE RESTRICT;
@@ -190,6 +194,9 @@ ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_4` FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE `videoarticles` ADD CONSTRAINT `videoarticles_ibfk_1` FOREIGN KEY (`VideoID`) REFERENCES `videolibrary`(`VideoID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+-- AddForeignKey
+ALTER TABLE `videoarticles` ADD CONSTRAINT `imagearticles_ibfk_1` FOREIGN KEY (`ImageID`) REFERENCES `imagelibrary`(`ImageID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `videoarticles` ADD CONSTRAINT `videoarticles_ibfk_2` FOREIGN KEY (`AdminID`) REFERENCES `admins`(`AdminID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
