@@ -61,12 +61,12 @@ model diseases {
   DiseaseID           Int                   @id @default(autoincrement())
   DiseaseName         String                @db.VarChar(255)
   Description         String?               @db.Text
-  CategoryID          Int?
+  CategoryID          Int
   ICD10_Code          String?               @db.VarChar(20)
-  RiskFactors         String?               @db.Text
-  Prevention          String?               @db.Text
-  Symptoms            String?               @db.Text
-  Diagnosis           String?               @db.Text
+  RiskFactors         String               @db.Text
+  Prevention          String               @db.Text
+  Symptoms            String               @db.Text
+  Diagnosis           String               @db.Text
   disease_medications disease_medications[]
   disease_treatments  disease_treatments[]
   categories          categories?           @relation(fields: [CategoryID], references: [CategoryID], onDelete: Restrict, onUpdate: Restrict, map: "diseases_ibfk_1")
