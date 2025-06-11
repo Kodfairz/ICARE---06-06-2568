@@ -8,10 +8,11 @@ import {
   getPaginationRowModel, // pagination row model สำหรับจัดการแบ่งหน้า
   flexRender, // ฟังก์ชันช่วยเรนเดอร์ค่าจาก column หรือ cell
 } from "@tanstack/react-table";
+import Cookies from "js-cookie"; // นำเข้า js-cookie สำหรับจัดการ cookie
 import axios from "axios"; // ไลบรารีสำหรับเรียก API
 import { API } from "../../../../service/api"; // ตัวแปรเก็บ URL API
 import { toast } from "react-toastify"; // สำหรับแจ้งเตือนข้อความบนหน้าเว็บ
-import * as dayjs from "dayjs"; // ไลบรารีจัดการวันที่
+import dayjs from "dayjs"; // ไลบรารีจัดการวันที่
 import relativeTime from "dayjs/plugin/relativeTime"; // plugin ของ dayjs แสดงเวลาสัมพัทธ์ เช่น "3 ชั่วโมงที่แล้ว"
 import "dayjs/locale/th"; // ภาษาไทยของ dayjs
 import Switch from "react-switch"; // switch component สำหรับ toggle สถานะ
@@ -22,30 +23,38 @@ const VideoManagement = () => {
   dayjs.extend(relativeTime); // เพิ่ม plugin relativeTime เข้ากับ dayjs
 
   // สเตทเก็บรายการวิดีโอที่โหลดมา
-  const [video, setVideo] = useState([]);
+  const [videos, setVideos] = useState([]);
   // สเตทสำหรับเปิด/ปิด modal ยืนยันลบ
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   // สเตทเก็บ id ของวิดีโอที่เลือกจะลบ
   const [selectedVideoId, setSelectedVideoId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // ฟังก์ชันดึงข้อมูลวิดีโอจาก API
-  const getVideo = async () => {
+  const getVideos = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${API}/video`); // เรียก API วิดีโอ
-      setVideo(response.data.resultData); // เก็บข้อมูลที่ได้ลงใน state
+      setVideos(response.data.resultData); // เก็บข้อมูลที่ได้ลงใน state
     } catch (error) {
       console.log(error);
       // แจ้งเตือนถ้าเรียก API ไม่สำเร็จ
       toast.error(error.response?.message || "ไม่สามารถเรียกวิดีโอได้");
     }
+    setIsLoading(false);
   };
+
+  // ดึงข้อมูลโพสต์ครั้งแรกตอน component โหลด
+  useEffect(() => {
+    getVideos();
+  }, []);
 
   // ฟังก์ชันลบวิดีโอโดย id
   const deleteVideo = async (id) => {
     try {
       const response = await axios.delete(`${API}/video/${id}`); // เรียก API ลบ
       toast.success(response.data.message || "ลบวิดีโอสำเร็จ"); // แจ้งเตือนสำเร็จ
-      getVideo(); // โหลดข้อมูลใหม่หลังลบเสร็จ
+      getVideos(); // โหลดข้อมูลใหม่หลังลบเสร็จ
     } catch (error) {
       console.log(error);
       toast.error(error.response?.message || "ไม่สามารถลบวิดีโอได้"); // แจ้งเตือนถ้าเกิดข้อผิดพลาด
@@ -57,9 +66,10 @@ const VideoManagement = () => {
     try {
       const response = await axios.patch(`${API}/video/change-status/${id}`, {
         isActive: isActive,
+        admin_id: `${JSON.parse(Cookies.get("user")).id}`
       }); // เรียก API อัปเดตสถานะ
       toast.success(response.data.message || "เปลี่ยนแปลงสถานะสำเร็จ"); // แจ้งเตือนสำเร็จ
-      getVideo(); // โหลดข้อมูลใหม่หลังเปลี่ยนสถานะ
+      getVideos(); // โหลดข้อมูลใหม่หลังเปลี่ยนสถานะ
     } catch (error) {
       console.log(error);
       toast.error(error.response?.message || "ไม่สามารถเปลี่ยนแปลงสถานะได้");
@@ -86,44 +96,48 @@ const VideoManagement = () => {
     }
   };
 
-  // โหลดข้อมูลวิดีโอครั้งแรกเมื่อ component mount
-  useEffect(() => {
-    getVideo();
-  }, []);
-
   // กำหนดคอลัมน์สำหรับ react-table (ใช้ useMemo เพื่อ optimize)
   const columns = useMemo(
     () => [
       {
         header: "#", // ชื่อหัวคอลัมน์
-        accessorKey: "id", // คีย์ข้อมูลใน object video
+        accessorKey: "VideoID", // คีย์ข้อมูลใน object video
       },
       {
         header: "หน้าปก",
         // ฟังก์ชันเรนเดอร์ cell ของคอลัมน์นี้ แสดงรูปหน้าปก
         cell: ({ row }) => (
           <img
-            src={row.original.thumbnail_url} // รูปภาพจากข้อมูล
-            alt={row.original.title} // alt text
+            src={row.original.imagelibrary.ImageURL} // รูปภาพจากข้อมูล
+            alt={row.original.imagelibrary.ImageName} // alt text
             className="w-24 rounded-2xl" // ขนาดและมุมโค้ง
           />
         ),
       },
       {
         header: "หัวข้อ",
-        accessorKey: "title", // ชื่อวิดีโอ
+        accessorKey: "Title", // ชื่อวิดีโอ
       },
       {
         header: "วันที่สร้าง",
         // แสดงวันที่สร้างแบบฟอร์แมต "วัน เดือน ปี"
         cell: ({ row }) => (
-          <p>{dayjs(row.original.created_at).format("DD MMMM YYYY")}</p>
+          <p>{dayjs(row.original.CreatedAt).format("DD MMMM YYYY")}</p>
         ),
       },
       {
         header: "อัพเดทล่าสุด",
         // แสดงเวลาที่อัปเดตล่าสุดในรูปแบบเวลาสัมพัทธ์ เช่น "3 ชั่วโมงที่แล้ว"
-        cell: ({ row }) => <p>{dayjs(row.original.updated_at).fromNow()}</p>,
+        cell: ({ row }) => <p>{dayjs(row.original.UpdatedAt).fromNow()}</p>
+      },
+      {
+        header: "โดย",
+        cell: ({ row }) => (
+          <>
+            {/* แสดงชื่อคนที่โพสต์หรือแก้ไข" */}
+            <p>{row.original.admins.AdminName}</p>
+          </>
+        ),
       },
       {
         header: "สถานะ",
@@ -133,7 +147,7 @@ const VideoManagement = () => {
             <Switch
               checked={row.original.isActive} // สถานะเปิด/ปิด
               onChange={() =>
-                changeStatusVideo(row.original.id, !row.original.isActive) // เปลี่ยนสถานะเมื่อสวิตช์ถูกคลิก
+                changeStatusVideo(row.original.VideoArticleID, !row.original.isActive) // เปลี่ยนสถานะเมื่อสวิตช์ถูกคลิก
               }
               offColor="#888" // สี background เมื่อปิด
               onColor="#4CAF50" // สี background เมื่อเปิด (เขียว)
@@ -152,14 +166,14 @@ const VideoManagement = () => {
           <div className="flex gap-2">
             <button
               onClick={() =>
-                router.push(`/admin/dashboard/edit-video/${row.original.id}`) // นำทางไปหน้าจอแก้ไขวิดีโอ
+                router.push(`/admin/dashboard/edit-video/${row.original.VideoArticleID}`) // นำทางไปหน้าจอแก้ไขวิดีโอ
               }
               className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
             >
               แก้ไข
             </button>
             <button
-              onClick={() => openConfirmModal(row.original.id)} // เปิด modal ยืนยันลบ
+              onClick={() => openConfirmModal(row.original.VideoArticleID)} // เปิด modal ยืนยันลบ
               className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               ลบ
@@ -173,12 +187,24 @@ const VideoManagement = () => {
 
   // สร้างตารางด้วย react-table โดยส่งข้อมูลและคอลัมน์เข้าไป
   const table = useReactTable({
-    data: video,
+    data: videos,
     columns,
     getCoreRowModel: getCoreRowModel(), // ใช้ row model พื้นฐาน
     getPaginationRowModel: getPaginationRowModel(), // ใช้ pagination
     initialState: { pagination: { pageSize: 10 } }, // กำหนดจำนวนแถวต่อหน้าเริ่มต้น
   });
+
+  // ถ้ายังโหลดข้อมูลอยู่ แสดง UI สำหรับ loading
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+          <p className="text-gray-600 text-lg">กำลังโหลดข้อมูล...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -192,7 +218,7 @@ const VideoManagement = () => {
         onClick={() => router.push("/admin/dashboard/add-video")}
         className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 hover:scale-105 mb-6"
       >
-        เพิ่มวิดีโอ
+        + เพิ่มวิดีโอ
       </button>
 
       {/* ตารางแสดงวิดีโอ มีการจัดการ overflow และกรอบ */}

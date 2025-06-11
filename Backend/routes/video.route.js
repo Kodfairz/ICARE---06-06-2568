@@ -9,6 +9,8 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     const video = await prisma.videoarticles.findMany({
         include : {
             videolibrary: true,         // รวมข้อมูลวิดีโอที่เกี่ยวข้อง
+            imagelibrary: true,
+            admins: true,
         }
     })
 
@@ -61,9 +63,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .post("/", async ({ body }) => {             // POST /video : เพิ่มวิดีโอใหม่
-    const video = await prisma.videolibrary.findFirst({
+    const video = await prisma.videoarticles.findFirst({
         where : {
-            VideoName : body.title               // ตรวจสอบว่ามีวิดีโอที่ชื่อเดียวกันหรือไม่
+            Title : body.title               // ตรวจสอบว่ามีวิดีโอที่ชื่อเดียวกันหรือไม่
         }
     })
 
@@ -71,23 +73,19 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ชื่อวิดีโอซ้ำ")       // โยน error แจ้งชื่อซ้ำ
     }
 
-    const newVideoLibrary = await prisma.videolibrary.create({
-        data : {                            // สร้างวิดีโอใหม่ในฐานข้อมูล
-            VideoName : body.title,
-            VideoURL : body.url,
-        }
-    })
-
-    const newVideoArticle = await prisma.videoarticles.create({
+    const newVideo = await prisma.videoarticles.create({
         data : {
-            VideoID : newVideoLibrary.VideoID,  // ใช้ VideoID ที่สร้างใหม่
+            Title : body.title,
+            Description : body.description,
+            ImageID : body.image_id,
+            VideoID : body.video_id,  // ใช้ VideoID ที่สร้างใหม่
             AdminID : Number(body.admin_id),  // ใช้ admin_id ที่ส่งมา
             Views : 0,                // เริ่มต้นวิวที่ 0
             isActive : body.isActive,  // ใช้สถานะ active ที่ส่งมา
         }
     })
 
-    if(!newVideoArticle || !newVideoLibrary) {                         // ถ้าเพิ่มวิดีโอไม่สำเร็จ
+    if(!newVideo) {                         // ถ้าเพิ่มวิดีโอไม่สำเร็จ
         throw new Error("ไม่สามารถเพิ่มวิดีโอได้");
     }
 
@@ -96,9 +94,9 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .put("/:id", async ({ body, params }) => {  // PUT /video/:id : แก้ไขข้อมูลวิดีโอตาม id
-    const video = await prisma.videolibrary.findFirst({
+    const video = await prisma.videoarticles.findFirst({
         where : {
-            VideoID : Number(params.id)            // หา video ที่มี id ตรงกับ param
+            VideoArticleID : Number(params.id)            // หา video ที่มี id ตรงกับ param
         }
     })
 
@@ -106,27 +104,21 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ไม่เจอวิดีโอ")
     }
 
-    const updateVideoLibrary = await prisma.videolibrary.update({
+    const updateVideo = await prisma.videoarticles.update({
         where : {
-            VideoID : Number(params.id)            // อัปเดตวิดีโอตาม id
+            VideoArticleID : Number(params.id)            // อัปเดตวิดีโอตาม id
         },
         data : {
-            VideoName : body.title,              // อัปเดตชื่อวิดีโอ
-            VideoURL : body.url,                  // อัปเดต URL วิดีโอ
+            Title : body.title,
+            Description : body.description,
+            ImageID : body.image_id,
+            VideoID : body.video_id,
+            AdminID : Number(body.admin_id),
+            isActive : body.isActive,
         }
     })
 
-    const updateVideoArticle = await prisma.videoarticles.update({
-        where : {
-            VideoID : Number(params.id)            // อัปเดตข้อมูลใน videoarticles ตาม id
-        },
-        data : {
-            AdminID : Number(body.admin_id),  // อัปเดต admin_id
-            isActive : body.isActive,          // อัปเดตสถานะ isActive
-        }
-    })
-
-    if(!updateVideoLibrary || !updateVideoArticle) {                      // ถ้าแก้ไขไม่สำเร็จ
+    if(!updateVideo) {                      // ถ้าแก้ไขไม่สำเร็จ
         throw new Error("แก้ไขวิดีโอไม่สำเร็จ")
     }
 
@@ -141,6 +133,22 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         },
         include : {                          // รวมข้อมูลผู้ใช้ที่เกี่ยวข้องกับ video
             videolibrary: true,              // รวมข้อมูลวิดีโอ
+            imagelibrary: true,
+        }
+    })
+    
+    return {
+        "resultData" : video                 // ส่งข้อมูลวิดีโอกลับ
+    }
+})
+.get("/user/:id", async ({ params }) => {         // GET /video/user/:id : ดึงข้อมูลวิดีโอตาม id
+    const video = await prisma.videoarticles.findFirst({
+        where : {
+            VideoArticleID : Number(params.id)            // หา video ตาม id
+        },
+        include : {                          // รวมข้อมูลผู้ใช้ที่เกี่ยวข้องกับ video
+            videolibrary: true,              // รวมข้อมูลวิดีโอ
+            imagelibrary: true,
         }
     })
 
@@ -148,7 +156,7 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         throw new Error("ไม่มีวิดีโอ")
     }
 
-    const updateVideo = await prisma.videoarticles.update({
+    const updateView = await prisma.videoarticles.update({
         where : {
             VideoArticleID : Number(params.id)            // อัปเดตจำนวนวิวเพิ่ม 1
         },
@@ -187,6 +195,7 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 })
 .patch("/change-status/:id", async ({ body, params }) => {  // PATCH /video/change-status/:id : เปลี่ยนสถานะ isActive
+    console.log(body)
     const video = await prisma.videoarticles.findFirst({
         where : {
             VideoArticleID : Number(params.id)            // หา video ตาม id
@@ -198,13 +207,13 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
     }
 
     const updateVideo = await prisma.videoarticles.update({
+        where : {
+            VideoArticleID : Number(params.id)
+        },
         data : {
             AdminID : Number(body.admin_id),  // อัปเดต admin_id
             isActive : body.isActive,        // อัปเดตสถานะ isActive
         },
-        where : {
-            VideoArticleID : Number(params.id)
-        }
     })
 
     if(!updateVideo) {                      // ถ้าเปลี่ยนสถานะไม่สำเร็จ

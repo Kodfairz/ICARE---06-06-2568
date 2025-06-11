@@ -13,116 +13,107 @@ import dynamic from "next/dynamic"; // สำหรับโหลด react-sele
 import { useDropzone } from "react-dropzone"; // สำหรับลากและวางไฟล์
 import Cookies from "js-cookie";
 
+const Select = dynamic(() => import("react-select"), { ssr: false });
+
 export default function EditVideoPage() {
+  const [images, setImages] = useState([]);
+  const [videos, setVideos] = useState([]);
   // สถานะของฟอร์ม
   const [title, setTitle] = useState("");            // ชื่อหัวข้อวิดีโอ
-  const [coverImage, setCoverImage] = useState(null); // URL รูปหน้าปก
-  const [videoLink, setVideoLink] = useState("");     // ลิงก์วิดีโอ (เช่น Youtube)
+  const [description, setDescription] = useState("");
+  const [imageId, setImageId] = useState(null); // URL รูปหน้าปก
+  const [videoId, setVideoId] = useState(null);     // ลิงก์วิดีโอ (เช่น Youtube)
+  const [videoUrl, setVideoUrl] = useState("");
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);  // สถานะกำลังโหลด/ส่งข้อมูล
   const [publishStatus, setPublishStatus] = useState(true); // สถานะเผยแพร่ (true=เผยแพร่)
-  const [content, setContent] = useState("")           // เนื้อหารายละเอียดวิดีโอ
 
   const router = useRouter(); // ตัวช่วยนำทางของ Next.js
   const { id } = useParams()  // ดึงพารามิเตอร์ id จาก URL
 
-  // ฟังก์ชันดึงข้อมูลวิดีโอตาม id
-  const getVideoById = async () => {
-    try {
-      const response = await axios.get(`${API}/video/${id}`); // เรียก API
-      console.log(response);
-      // ตั้งค่าข้อมูลที่ได้มาในสถานะต่างๆ
-      setTitle(response.data.resultData.title);
-      setVideoLink(response.data.resultData.url);
-      setContent(response.data.resultData.description);
-      setPublishStatus(response.data.resultData.isActive);
-      setCoverImage(response.data.resultData.thumbnail_url);
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response?.message || "ไม่สามารถเรียกวิดีโอได้"); // แจ้งเตือนเมื่อเกิดข้อผิดพลาด
-    }
-  };
-
-  // เรียกดึงข้อมูลเมื่อ component โหลดครั้งแรก
   useEffect(() => {
-    getVideoById();
-  }, []);
-
-  // ตั้งค่า editor ของ Tiptap (ยังไม่ได้ใช้ใน UI)
-  const editor = useEditor({
-    extensions: [
-      StarterKit,  // ฟีเจอร์พื้นฐาน เช่น bold, italic, lists
-      Image.configure({ // ตั้งค่า image extension ให้แสดงแบบ inline
-        inline: true,
-      }),
-    ],
-    content: "",
-  });
-
-  // ฟังก์ชันอัปโหลดรูปภาพขึ้น Cloudinary
-  const handleImageUpload = async (file) => {
-    if (!file) {
-      toast.error("กรุณาเลือกไฟล์รูปภาพ!");
-      return null;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("รองรับเฉพาะไฟล์รูปภาพ!");
-      return null;
-    }
-
-    // สร้าง FormData สำหรับอัปโหลด
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", `jyvur9yd`);  // preset ของ Cloudinary
-    formData.append("folder", "icare");             // โฟลเดอร์บน Cloudinary
-
-    try {
-      // ส่งไฟล์ไปยัง Cloudinary
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/dcq3ijz0g/image/upload`,
-        formData
-      );
-      return response.data.url; // คืน URL ของรูปที่อัปโหลด
-    } catch (error) {
-      console.error("Error uploading image:", error.response?.data || error.message);
-      toast.error("อัปโหลดรูปภาพไม่สำเร็จ");
-      return null;
-    }
-  };
-
-  // ฟังก์ชันเพิ่มรูปภาพเข้า editor (ยังไม่แสดง editor ใน UI)
-  const addImage = () => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (!file) return;
-
-      const imageUrl = await handleImageUpload(file);
-      if (imageUrl && editor) {
-        // แทรกรูปภาพลงใน editor
-        editor.chain().focus().setImage({ src: imageUrl }).run();
+    // ฟังก์ชันดึงข้อมูลวิดีโอตาม id
+    const getVideoById = async () => {
+      try {
+        const response = await axios.get(`${API}/video/${id}`); // เรียก API
+        console.log(response);
+        // ตั้งค่าข้อมูลที่ได้มาในสถานะต่างๆ
+        setTitle(response.data.resultData.Title);
+        setDescription(response.data.resultData.Description);
+        setImageId(response.data.resultData.ImageID);
+        setVideoId(response.data.resultData.VideoID);
+        setPublishStatus(response.data.resultData.isActive);
+        setVideoUrl(response.data.resultData.videolibrary.VideoURL);
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response?.message || "ไม่สามารถเรียกวิดีโอได้"); // แจ้งเตือนเมื่อเกิดข้อผิดพลาด
       }
     };
+
+    const getImages = async () => {
+      try {
+        const response = await axios.get(`${API}/images/`);
+        setImages(response.data.resultData || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    
+    const getVideos = async () => {
+      try {
+        const response = await axios.get(`${API}/videos/`);
+        setVideos(response.data.resultData || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getVideoById();
+    getImages();
+    getVideos();
+  }, []);
+
+  const ImageOptions = images.map((img) => ({
+    value: img.ImageID,
+    label: img.ImageName,
+    imageUrl: img.ImageURL,
+  }));
+
+  const videoOptions = videos.map((vid) => {
+    const youtubeId = extractYouTubeID(vid.VideoURL);
+    return {
+      value: vid.VideoID,
+      label: vid.VideoName,
+      youtubeId,
+      videoUrl: vid.VideoURL,
+    };
+  });
+
+  // Custom option (แสดงรูป + ชื่อ)
+  const customOption = (props) => {
+    const { data, innerRef, innerProps } = props;
+    return (
+      <div ref={innerRef} {...innerProps} className="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+        <img src={data.imageUrl} alt={data.label} className="w-8 h-8 object-cover rounded mr-2" />
+        <span>{data.label}</span>
+      </div>
+    );
   };
 
-  // อัปโหลดรูปหน้าปก และเซ็ต URL
-  const handleCoverImageUpload = async (file) => {
-    const imageUrl = await handleImageUpload(file);
-    if (imageUrl) {
-      setCoverImage(imageUrl); // เก็บ URL รูปหน้าปก
-    }
-  };
+  // Custom selected value (แสดงเมื่อเลือกแล้ว)
+  const customSingleValue = ({ data }) => (
+    <div className="flex items-center">
+      <img src={data.imageUrl} alt={data.label} className="w-6 h-6 object-cover rounded mr-2" />
+      <span>{data.label}</span>
+    </div>
+  );
 
-  // ฟังก์ชันรับไฟล์จากการลากและวาง
-  const onDrop = (acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      handleCoverImageUpload(acceptedFiles[0]);
-    }
-  };
+  // ฟังก์ชันแยก YouTube ID จาก URL
+  function extractYouTubeID(url) {
+    const regex = /(?:youtube\.com\/.*v=|youtu\.be\/)([^&]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
 
   // ฟังก์ชันส่งข้อมูลแก้ไขวิดีโอ
   const handleSubmit = async (e) => {
@@ -133,11 +124,11 @@ export default function EditVideoPage() {
       // เรียก API PUT เพื่อแก้ไขข้อมูลวิดีโอ
       const response = await axios.put(`${API}/video/${id}`, {
         title,
-        thumbnail_url: coverImage,
-        url: videoLink,
-        description: content,
+        description,
+        image_id: imageId,
+        video_id: videoId,
         isActive: publishStatus,
-        update_id: `${JSON.parse(Cookies.get("user")).id}`, // ดึง id ผู้แก้ไขจาก cookie
+        admin_id: `${JSON.parse(Cookies.get("user")).id}`, // ดึง id ผู้แก้ไขจาก cookie
       });
       if (response.status === 200) {
         toast.success(response.data.message || "เเก้ไขวิดีโอสำเร็จ!");
@@ -150,36 +141,6 @@ export default function EditVideoPage() {
       setIsLoading(false); // ปิดสถานะกำลังส่งข้อมูล
     }
   };
-
-  // ฟังก์ชันแปลงลิงก์ YouTube เป็น iframe สำหรับแสดงวิดีโอ preview
-  const renderVideoPreview = (link) => {
-    // pattern ตรวจจับ videoId ของ YouTube
-    const youtubePattern =
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = link.match(youtubePattern);
-    if (match) {
-      const videoId = match[1];
-      return (
-        <div className="mt-4">
-          <iframe
-            height="100%"
-            src={`https://www.youtube.com/embed/${videoId}`}
-            title="YouTube video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-      );
-    }
-    return null; // ถ้าไม่ใช่ลิงก์ YouTube คืนค่า null
-  };
-
-  // ตั้งค่า react-dropzone สำหรับอัปโหลดภาพหน้าปก
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: "image/*", // กำหนดให้รับเฉพาะไฟล์รูปภาพ
-  });
 
   return (
     <div className="container mx-auto p-6 min-h-screen">
@@ -202,40 +163,106 @@ export default function EditVideoPage() {
           />
         </div>
 
-        {/* Input รูปหน้าปก (ลากและวางหรือคลิกเลือกไฟล์) */}
         <div>
-          <label htmlFor="coverImage" className="block text-lg font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="description"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
+            คำอธิบาย
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+            placeholder="ป้อนคำอธิบาย"
+            rows={3}
+          />
+        </div>
+
+        {/* Input รูปหน้าปก (drag & drop) */}
+        <div>
+          <label
+            htmlFor="image"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
             หน้าปกข้อมูล
           </label>
-          <div
-            {...getRootProps()}
-            className="border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer"
-          >
-            <div>
-              <span className="text-gray-500">ลากและวางหรือลือกไฟล์</span>
-            </div>
-            <input {...getInputProps()} />
-            {/* แสดงรูปหน้าปกถ้ามี */}
-            {coverImage && <img src={coverImage} alt="Cover" className="w-1/3 rounded-lg mt-4" />}
-          </div>
+          <Select
+            id="image"
+            options={ImageOptions}
+            value={ImageOptions.find((option) => option.value === imageId) || null}
+            onChange={(selected) => setImageId(selected?.value || null)}
+            placeholder="เลือกหน้าปกข้อมูล"
+            classNamePrefix="react-select"
+            className="w-full"
+            isClearable
+            components={{
+              Option: customOption,
+              SingleValue: customSingleValue
+            }}
+          />
         </div>
 
         {/* Input ลิงก์วิดีโอ */}
         <div>
-          <label htmlFor="videoLink" className="block text-lg font-medium text-gray-700 mb-2">
-            ลิงก์วิดีโอ
+          <label
+            htmlFor="video"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
+            วิดีโอ
           </label>
-          <input
-            type="url"
-            id="videoLink"
-            value={videoLink}
-            onChange={(e) => setVideoLink(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-            placeholder="กรอกลิงก์วิดีโอแนะนำ"
+          <Select
+            id="video"
+            options={videoOptions}
+            value={videoOptions.find((option) => option.value === videoId) || null}
+            onChange={(selected) => {
+              setVideoId(selected?.value || null);
+              setSelectedVideo(selected || null); // เก็บ object ที่เลือกไว้
+            }}
+            placeholder="เลือกวิดีโอ"
+            classNamePrefix="react-select"
+            className="w-full"
+            isClearable
           />
-          {/* แสดง preview วิดีโอถ้ามีลิงก์ */}
-          {videoLink && renderVideoPreview(videoLink)}
         </div>
+
+        {videoId && !selectedVideo && (
+          <div className="mt-4">
+            <h4 className="text-lg font-medium mb-2">วิดีโอตัวอย่าง</h4>
+            <div>
+              <iframe
+                width="100%"
+                height="315"
+                src={`https://www.youtube.com/embed/${extractYouTubeID(videoUrl)}`}
+                title={videoId}
+                className="aspect-video rounded-xl overflow-hidden shadow-lg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        )}
+
+        {selectedVideo && (
+          <div className="mt-4">
+            <h4 className="text-lg font-medium mb-2">วิดีโอตัวอย่าง</h4>
+            <div>
+              <iframe
+                width="100%"
+                height="315"
+                src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}`}
+                title={selectedVideo.label}
+                className="aspect-video rounded-xl overflow-hidden shadow-lg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        )}
 
         {/* สถานะการเผยแพร่ (สวิตช์เปิด/ปิด) */}
         <div>
@@ -258,27 +285,14 @@ export default function EditVideoPage() {
           </div>
         </div>
 
-        {/* ช่องกรอกรายละเอียด */}
-        <div>
-          <label htmlFor="publishStatus" className="block text-lg font-medium text-gray-700 mb-2">
-            รายละเอียด
-          </label>
-          <textarea
-            value={content}
-            required
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-          ></textarea>
-        </div>
-
         {/* ปุ่มบันทึกและยกเลิก */}
         <div className="flex gap-4">
           <button
             type="submit"
             disabled={isLoading}
-            className="flex-1 p-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 disabled:opacity-50"
+            className="flex-1 p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50"
           >
-            {isLoading ? "กำลังเพิ่ม..." : "เพิ่มวิดีโอ"}
+            {isLoading ? "กำลังบันทึกการแก้ไข..." : "บันทึกการแก้ไข"}
           </button>
           <button
             type="button"
