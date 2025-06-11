@@ -567,13 +567,23 @@ export default function EditPostPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700"
-        >
-          {isLoading ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
-        </button>
+        {/* ปุ่มบันทึกและยกเลิก */}
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex-1 p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50"
+          >
+            {isLoading ? "กำลังบันทึกการแก้ไข..." : "บันทึกการแก้ไข"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
+          >
+            ยกเลิก
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -285,7 +285,7 @@ export default function AddVideoPage() {
           </button>
           <button
             type="button"
-            onClick={() => router.push("/admin/dashboard")}
+            onClick={() => router.back()}
             className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
           >
             ยกเลิก

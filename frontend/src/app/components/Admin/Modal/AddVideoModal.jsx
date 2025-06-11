@@ -109,7 +109,7 @@ export default function AddVideoModal({ onClose, onSubmit }) {
                             onClick={onClose} // ปิด modal
                             className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
                         >
-                            ลบ
+                            ยกเลิก
                         </button>
                     </div>
                 </form>

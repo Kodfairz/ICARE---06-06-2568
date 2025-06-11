@@ -39,7 +39,7 @@ export default function AddAdminModal({ onClose, onSubmit }) {
                     {/* ช่องกรอก AdminName */}
                     <input
                         type="text"
-                        placeholder="AdminName"
+                        placeholder="ชื่อผู้ดูแลระบบ"
                         value={newUser.AdminName} // ผูกค่า input กับ state newUser.AdminName
                         onChange={(e) => setNewUser({ ...newUser, AdminName: e.target.value })} 
                         // เมื่อเปลี่ยนแปลง input จะอัปเดต state โดยไม่ลบค่าอื่น ๆ (spread operator ...)
@@ -49,7 +49,7 @@ export default function AddAdminModal({ onClose, onSubmit }) {
                     {/* ช่องกรอก password */}
                     <input
                         type="password"
-                        placeholder="Password"
+                        placeholder="รหัสผ่าน"
                         value={newUser.password} // ผูกค่า input กับ state newUser.password
                         onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                         required
@@ -70,7 +70,7 @@ export default function AddAdminModal({ onClose, onSubmit }) {
                             onClick={onClose} // ปิด modal
                             className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
                         >
-                            ลบ
+                            ยกเลิก
                         </button>
                     </div>
                 </form>

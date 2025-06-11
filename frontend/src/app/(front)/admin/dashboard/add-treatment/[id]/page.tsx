@@ -16,10 +16,12 @@ export default function AddTreatmentPage() {
   const [duration, setDuration] = useState("");
   const [sideEffect, setSideEffect] = useState("");
   const [contraindication, setContraindication] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await axios.post(`${API}/treatments`, {
@@ -38,6 +40,7 @@ export default function AddTreatmentPage() {
     } catch (error) {
       toast.error(error.response?.data?.message || "เพิ่มข้อมูลไม่สำเร็จ");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -160,12 +163,21 @@ export default function AddTreatmentPage() {
             />
           </div>
 
-          <div className="mt-8 text-center">
+          {/* ปุ่มบันทึกและยกเลิก */}
+          <div className="flex gap-4">
             <button
               type="submit"
-              className="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              className="flex-1 p-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 disabled:opacity-50"
             >
-              บันทึกข้อมูล
+              {isLoading ? "กำลังบันทึกข้อมูล..." : "บันทึกข้อมูล"}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
+            >
+              ยกเลิก
             </button>
           </div>
         </div>

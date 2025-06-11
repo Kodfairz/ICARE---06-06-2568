@@ -136,7 +136,7 @@ export default function ImageLibrary() {
     () => [
       { header: "#", accessorKey: "ImageID" }, // แสดง id
       {
-        header: "หน้าปก",
+        header: "รูปภาพ",
         cell: ({ row }) => (
           <>
             {/* แสดงรูปภาพ */}

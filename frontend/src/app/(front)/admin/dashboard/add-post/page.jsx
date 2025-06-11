@@ -388,14 +388,14 @@ export default function AddPostPage() {
             >
               คำอธิบาย
             </label>
-            <input
-              type="text"
+            <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนคำอธิบาย"
+              rows={3}
             />
           </div>
 
@@ -440,164 +440,164 @@ export default function AddPostPage() {
               }}
             />
           </div>
-        </div>
 
-        <div>
-          <label
-            htmlFor="video"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            วิดีโอแนะนำ
-          </label>
-          <Select
-            id="video"
-            options={videoOptions}
-            value={videoOptions.find((option) => option.value === videoId) || null}
-            onChange={(selected) => {
-              setVideoId(selected?.value || null);
-              setSelectedVideo(selected || null); // เก็บ object ที่เลือกไว้
-            }}
-            placeholder="เลือกวิดีโอแนะนำ"
-            classNamePrefix="react-select"
-            className="w-full"
-            isClearable
-          />
-        </div>
-
-        {selectedVideo && (
-          <div className="mt-4">
-            <h4 className="text-lg font-medium mb-2">วิดีโอตัวอย่าง</h4>
-            <div>
-              <iframe
-                width="100%"
-                height="315"
-                src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}`}
-                title={selectedVideo.label}
-                className="aspect-video rounded-xl overflow-hidden shadow-lg"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
+          <div>
+            <label
+              htmlFor="video"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              วิดีโอแนะนำ
+            </label>
+            <Select
+              id="video"
+              options={videoOptions}
+              value={videoOptions.find((option) => option.value === videoId) || null}
+              onChange={(selected) => {
+                setVideoId(selected?.value || null);
+                setSelectedVideo(selected || null); // เก็บ object ที่เลือกไว้
+              }}
+              placeholder="เลือกวิดีโอแนะนำ"
+              classNamePrefix="react-select"
+              className="w-full"
+              isClearable
+            />
           </div>
-        )}
 
-        {/* <div>
-          <label className="block text-lg font-medium text-gray-700 mb-2">
-            หน้าปกข้อมูล
-          </label>
-          <div
-            {...getRootProps()}
-            className="border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer rounded-lg"
-          >
-            <input {...getInputProps()} />
-            <p className="text-gray-500">ลากและวางหรือเลือกไฟล์</p>
-            {coverImage && (
-              <img
-                src={coverImage}
-                alt="Cover"
-                className="max-w-xs max-h-60 w-full h-auto mx-auto rounded-lg mt-4 object-cover shadow"
-              />
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="imageName"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            ชื่อรูปภาพ
-          </label>
-          <input
-            type="text"
-            id="imageName"
-            value={imageName}
-            onChange={(e) => setImageName(e.target.value)}
-            required
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            placeholder="ป้อนชื่อรูปภาพ"
-          />
-        </div> */}
-
-        {/* <div>
-          <label
-            htmlFor="videoLink"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            ลิงก์วิดีโอแนะนำ
-          </label>
-          <input
-            type="url"
-            id="videoLink"
-            value={videoLink}
-            onChange={(e) => setVideoLink(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            placeholder="กรอกลิงก์วิดีโอแนะนำ"
-          />
-          {videoLink && (
-            <div className="mt-4 aspect-video w-full max-w-xl mx-auto rounded-lg overflow-hidden shadow-lg">
-              {renderVideoPreview(videoLink)}
+          {selectedVideo && (
+            <div className="mt-4">
+              <h4 className="text-lg font-medium mb-2">วิดีโอตัวอย่าง</h4>
+              <div>
+                <iframe
+                  width="100%"
+                  height="315"
+                  src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}`}
+                  title={selectedVideo.label}
+                  className="aspect-video rounded-xl overflow-hidden shadow-lg"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
             </div>
           )}
-        </div>
 
-        <div>
-          <label
-            htmlFor="videoName"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            ชื่อวิดีโอ
-          </label>
-          <input
-            type="text"
-            id="videoName"
-            value={videoName}
-            onChange={(e) => setVideoName(e.target.value)}
-            required
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            placeholder="ป้อนชื่อวิดีโอ"
-          />
-        </div> */}
+          {/* <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">
+              หน้าปกข้อมูล
+            </label>
+            <div
+              {...getRootProps()}
+              className="border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer rounded-lg"
+            >
+              <input {...getInputProps()} />
+              <p className="text-gray-500">ลากและวางหรือเลือกไฟล์</p>
+              {coverImage && (
+                <img
+                  src={coverImage}
+                  alt="Cover"
+                  className="max-w-xs max-h-60 w-full h-auto mx-auto rounded-lg mt-4 object-cover shadow"
+                />
+              )}
+            </div>
+          </div>
 
-        <div>
-          <label
-            htmlFor="icd10Code"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            ICD10 Code
-          </label>
-          <input
-            type="text"
-            id="icd10Code"
-            value={icd10Code}
-            onChange={(e) => setIcd10Code(e.target.value)}
-            required
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            placeholder="ป้อน ICD10 Code"
-          />
-        </div>
+          <div>
+            <label
+              htmlFor="imageName"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              ชื่อรูปภาพ
+            </label>
+            <input
+              type="text"
+              id="imageName"
+              value={imageName}
+              onChange={(e) => setImageName(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนชื่อรูปภาพ"
+            />
+          </div> */}
 
-        {/* สวิตช์สถานะ */}
-        <div>
-          <label
-            htmlFor="publishStatus"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            สถานะเผยแพร่
-          </label>
-          <Switch
-            checked={publishStatus}
-            onChange={setPublishStatus}
-            offColor="#d1d5db"
-            onColor="#4f46e5"
-            uncheckedIcon={false}
-            checkedIcon={false}
-            height={24}
-            width={48}
-            handleDiameter={22}
-            aria-label="Toggle publish status"
-          />
+          {/* <div>
+            <label
+              htmlFor="videoLink"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              ลิงก์วิดีโอแนะนำ
+            </label>
+            <input
+              type="url"
+              id="videoLink"
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="กรอกลิงก์วิดีโอแนะนำ"
+            />
+            {videoLink && (
+              <div className="mt-4 aspect-video w-full max-w-xl mx-auto rounded-lg overflow-hidden shadow-lg">
+                {renderVideoPreview(videoLink)}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="videoName"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              ชื่อวิดีโอ
+            </label>
+            <input
+              type="text"
+              id="videoName"
+              value={videoName}
+              onChange={(e) => setVideoName(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนชื่อวิดีโอ"
+            />
+          </div> */}
+
+          <div>
+            <label
+              htmlFor="icd10Code"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              ICD10 Code
+            </label>
+            <input
+              type="text"
+              id="icd10Code"
+              value={icd10Code}
+              onChange={(e) => setIcd10Code(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อน ICD10 Code"
+            />
+          </div>
+
+          {/* สวิตช์สถานะ */}
+          <div>
+            <label
+              htmlFor="publishStatus"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              สถานะเผยแพร่
+            </label>
+            <Switch
+              checked={publishStatus}
+              onChange={setPublishStatus}
+              offColor="#d1d5db"
+              onColor="#4f46e5"
+              uncheckedIcon={false}
+              checkedIcon={false}
+              height={24}
+              width={48}
+              handleDiameter={22}
+              aria-label="Toggle publish status"
+            />
+          </div>
         </div>
 
         {/* แท็บแก้ไขเนื้อหา */}
@@ -675,13 +675,21 @@ export default function AddPostPage() {
 
         </div>
 
-        <div className="mt-8 text-center">
+        {/* ปุ่มบันทึกและยกเลิก */}
+        <div className="flex gap-4">
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex-1 p-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-300 disabled:opacity-50"
           >
-            {isLoading ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+            {isLoading ? "กำลังบันทึกข้อมูล..." : "บันทึกข้อมูล"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
+          >
+            ยกเลิก
           </button>
         </div>
       </form>

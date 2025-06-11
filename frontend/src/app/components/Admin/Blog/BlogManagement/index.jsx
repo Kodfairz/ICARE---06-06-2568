@@ -186,9 +186,9 @@ export default function BlogManagement() {
       {
         header: "อัพเดทล่าสุด",
         cell: ({ row }) => {
-          const relative = dayjs(row.original.articleedits.EditDate).locale('th').fromNow();
-          return <>{relative}</>;
-        },
+          const editDate = row.original.articleedits?.[0]?.EditDate;
+          return <p>{editDate ? dayjs(editDate).fromNow() : "ไม่มีข้อมูล"}</p>;
+        }
       },
       {
         header: "โพสต์โดย",
@@ -261,7 +261,7 @@ export default function BlogManagement() {
               {/* ปุ่มลบ */}
               <button
                 onClick={() => {
-                  setPostIdToDelete(row.original.HealtaArticleID);
+                  setPostIdToDelete(row.original.HealthArticleID);
                   setIsModalOpen(true);
                 }}
                 disabled={isDisabled}

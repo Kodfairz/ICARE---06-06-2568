@@ -15,6 +15,7 @@ export default function EditMedicationPage() {
   const [duration, setDuration] = useState("");
   const [sideEffect, setSideEffect] = useState("");
   const [contraindication, setContraindication] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   // ฟังก์ชันดึงข้อมูลยาจาก API
@@ -42,6 +43,7 @@ export default function EditMedicationPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await axios.put(`${API}/treatments/${id}`, {
@@ -59,6 +61,7 @@ export default function EditMedicationPage() {
     } catch (error) {
       toast.error(error.response?.data?.message || "แก้ไขข้อมูลไม่สำเร็จ");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -181,12 +184,21 @@ export default function EditMedicationPage() {
             />
           </div>
 
-          <div className="mt-8 text-center">
+          {/* ปุ่มบันทึกและยกเลิก */}
+          <div className="flex gap-4">
             <button
               type="submit"
-              className="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              className="flex-1 p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50"
             >
-              บันทึกข้อมูล
+              {isLoading ? "กำลังบันทึกการแก้ไข..." : "บันทึกการแก้ไข"}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
+            >
+              ยกเลิก
             </button>
           </div>
         </div>
