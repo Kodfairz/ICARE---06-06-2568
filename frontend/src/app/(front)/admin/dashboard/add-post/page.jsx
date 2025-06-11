@@ -19,18 +19,20 @@ import Cookies from "js-cookie";
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
 export default function AddPostPage() {
+  const [categories, setCategories] = useState([]);
+  const [images, setImages] = useState([]);
+  const [videos, setVideos] = useState([]);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(null);
-  const [coverImage, setCoverImage] = useState(null);
-  const [imageName, setImageName] = useState("");
-  const [videoLink, setVideoLink] = useState("");
-  const [videoName, setVideoName] = useState("");
+  const [imageId, setImageId] = useState(null);
+  const [videoId, setVideoId] = useState("");
   const [icd10Code, setIcd10Code] = useState("");
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [publishStatus, setPublishStatus] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("edit");
-  const [categories, setCategories] = useState([]);
-  const [publishStatus, setPublishStatus] = useState(true);
   const router = useRouter();
 
   // ตัว editor สำหรับเนื้อหาในฟิลด์หลัก
@@ -91,7 +93,28 @@ export default function AddPostPage() {
         console.log(error);
       }
     };
+
+    const getImages = async () => {
+      try {
+        const response = await axios.get(`${API}/images/`);
+        setImages(response.data.resultData || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    
+    const getVideos = async () => {
+      try {
+        const response = await axios.get(`${API}/videos/`);
+        setVideos(response.data.resultData || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     getCategories();
+    getImages();
+    getVideos();
   }, []);
 
   const handleImageUpload = async (file) => {
@@ -140,18 +163,18 @@ export default function AddPostPage() {
     };
   };
 
-  const handleCoverImageUpload = async (file) => {
-    const imageUrl = await handleImageUpload(file);
-    if (imageUrl) {
-      setCoverImage(imageUrl);
-    }
-  };
+  // const handleCoverImageUpload = async (file) => {
+  //   const imageUrl = await handleImageUpload(file);
+  //   if (imageUrl) {
+  //     setImageId(imageUrl);
+  //   }
+  // };
 
-  const onDrop = (acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      handleCoverImageUpload(acceptedFiles[0]);
-    }
-  };
+  // const onDrop = (acceptedFiles) => {
+  //   if (acceptedFiles.length > 0) {
+  //     handleCoverImageUpload(acceptedFiles[0]);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -179,10 +202,8 @@ export default function AddPostPage() {
         name: title,
         description: description,
         category_id: category.toString(),
-        image_url: coverImage,
-        image_name: imageName,
-        video_url: videoLink,
-        video_name: videoName,
+        image_id: imageId,
+        video_id: videoId,
         icd10_code: icd10Code,
         risk_factors: content,
         symptoms: symptom,
@@ -202,36 +223,78 @@ export default function AddPostPage() {
     }
   };
 
-  const renderVideoPreview = (link) => {
-    const youtubePattern =
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = link.match(youtubePattern);
-    if (match) {
-      const videoId = match[1];
-      return (
-        <iframe
-          width="100%"
-          height="100%"
-          src={`https://www.youtube.com/embed/${videoId}`}
-          title="YouTube video"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      );
-    }
-    return null;
-  };
+  // const renderVideoPreview = (link) => {
+  //   const youtubePattern =
+  //     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  //   const match = link.match(youtubePattern);
+  //   if (match) {
+  //     const videoId = match[1];
+  //     return (
+  //       <iframe
+  //         width="100%"
+  //         height="100%"
+  //         src={`https://www.youtube.com/embed/${videoId}`}
+  //         title="YouTube video"
+  //         frameBorder="0"
+  //         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  //         allowFullScreen
+  //       />
+  //     );
+  //   }
+  //   return null;
+  // };
+
+  // const { getRootProps, getInputProps } = useDropzone({
+  //   onDrop,
+  //   accept: "image/*",
+  // });
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.CategoryID,
     label: cat.CategoryName,
   }));
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: "image/*",
+  const ImageOptions = images.map((img) => ({
+    value: img.ImageID,
+    label: img.ImageName,
+    imageUrl: img.ImageURL,
+  }));
+
+  const videoOptions = videos.map((vid) => {
+    const youtubeId = extractYouTubeID(vid.VideoURL);
+    return {
+      value: vid.VideoID,
+      label: vid.VideoName,
+      youtubeId,
+      videoUrl: vid.VideoURL
+    };
   });
+
+  // Custom option (แสดงรูป + ชื่อ)
+  const customOption = (props) => {
+    const { data, innerRef, innerProps } = props;
+    return (
+      <div ref={innerRef} {...innerProps} className="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+        <img src={data.imageUrl} alt={data.label} className="w-8 h-8 object-cover rounded mr-2" />
+        <span>{data.label}</span>
+      </div>
+    );
+  };
+
+  // Custom selected value (แสดงเมื่อเลือกแล้ว)
+  const customSingleValue = ({ data }) => (
+    <div className="flex items-center">
+      <img src={data.imageUrl} alt={data.label} className="w-6 h-6 object-cover rounded mr-2" />
+      <span>{data.label}</span>
+    </div>
+  );
+
+  // ฟังก์ชันแยก YouTube ID จาก URL
+  function extractYouTubeID(url) {
+    const regex = /(?:youtube\.com\/.*v=|youtu\.be\/)([^&]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
 
   // Toolbar component สำหรับ editor ย่อย
   const RenderToolbar = ({ editorInstance }) => {
@@ -354,10 +417,72 @@ export default function AddPostPage() {
               isClearable
             />
           </div>
+
+          <div>
+            <label
+              htmlFor="image"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              หน้าปกข้อมูล
+            </label>
+            <Select
+              id="image"
+              options={ImageOptions}
+              value={ImageOptions.find((option) => option.value === imageId) || null}
+              onChange={(selected) => setImageId(selected?.value || null)}
+              placeholder="เลือกหน้าปกข้อมูล"
+              classNamePrefix="react-select"
+              className="w-full"
+              isClearable
+              components={{
+                Option: customOption,
+                SingleValue: customSingleValue
+              }}
+            />
+          </div>
         </div>
 
-        {/* หน้าปก */}
         <div>
+          <label
+            htmlFor="video"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
+            วิดีโอแนะนำ
+          </label>
+          <Select
+            id="video"
+            options={videoOptions}
+            value={videoOptions.find((option) => option.value === videoId) || null}
+            onChange={(selected) => {
+              setVideoId(selected?.value || null);
+              setSelectedVideo(selected || null); // เก็บ object ที่เลือกไว้
+            }}
+            placeholder="เลือกวิดีโอแนะนำ"
+            classNamePrefix="react-select"
+            className="w-full"
+            isClearable
+          />
+        </div>
+
+        {selectedVideo && (
+          <div className="mt-4">
+            <h4 className="text-lg font-medium mb-2">วิดีโอตัวอย่าง</h4>
+            <div>
+              <iframe
+                width="100%"
+                height="315"
+                src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}`}
+                title={selectedVideo.label}
+                className="aspect-video rounded-xl overflow-hidden shadow-lg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        )}
+
+        {/* <div>
           <label className="block text-lg font-medium text-gray-700 mb-2">
             หน้าปกข้อมูล
           </label>
@@ -378,25 +503,24 @@ export default function AddPostPage() {
         </div>
 
         <div>
-            <label
-              htmlFor="imageName"
-              className="block text-lg font-medium text-gray-700 mb-2"
-            >
-              ชื่อรูปภาพ
-            </label>
-            <input
-              type="text"
-              id="imageName"
-              value={imageName}
-              onChange={(e) => setImageName(e.target.value)}
-              required
-              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนชื่อรูปภาพ"
-            />
-          </div>
+          <label
+            htmlFor="imageName"
+            className="block text-lg font-medium text-gray-700 mb-2"
+          >
+            ชื่อรูปภาพ
+          </label>
+          <input
+            type="text"
+            id="imageName"
+            value={imageName}
+            onChange={(e) => setImageName(e.target.value)}
+            required
+            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+            placeholder="ป้อนชื่อรูปภาพ"
+          />
+        </div> */}
 
-        {/* วิดีโอ */}
-        <div>
+        {/* <div>
           <label
             htmlFor="videoLink"
             className="block text-lg font-medium text-gray-700 mb-2"
@@ -434,7 +558,7 @@ export default function AddPostPage() {
             className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
             placeholder="ป้อนชื่อวิดีโอ"
           />
-        </div>
+        </div> */}
 
         <div>
           <label

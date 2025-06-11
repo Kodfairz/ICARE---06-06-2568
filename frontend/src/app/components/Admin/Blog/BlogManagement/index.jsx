@@ -242,7 +242,7 @@ export default function BlogManagement() {
                     : "bg-sky-500 hover:bg-sky-600"
                 }`}
               >
-                ดูข้อมูล
+                ดูข้อมูลยา/รักษา
               </button>
               
               {/* ปุ่มแก้ไข */}

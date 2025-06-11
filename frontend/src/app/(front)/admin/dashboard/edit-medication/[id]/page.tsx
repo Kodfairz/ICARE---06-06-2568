@@ -67,7 +67,7 @@ export default function EditMedicationPage() {
   return (
     <div className="container mx-auto p-6 min-h-screen">
       <h1 className="text-4xl font-bold text-gray-800 mb-8 animate-fade-in-down">
-        แก้ไขข้อมูล
+        แก้ไขข้อมูลยา
       </h1>
 
       <form
@@ -119,15 +119,18 @@ export default function EditMedicationPage() {
             >
               รูปแบบยา
             </label>
-            <input
-              type="text"
+            <select
               id="dosageForm"
               value={dosageForm}
               onChange={(e) => setDosageForm(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนรูปแบบยา"
-            />
+            >
+              <option value="เม็ด">เม็ด</option>
+              <option value="น้ำ">น้ำ</option>
+              <option value="ฉีด">ฉีด</option>
+              <option value="ดม">ดม</option>
+            </select>
           </div>
 
           <div>
@@ -144,7 +147,7 @@ export default function EditMedicationPage() {
               onChange={(e) => setStrength(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนความรุนแรงของยา"
+              placeholder="ขนาดโดส เช่น 500mg"
             />
           </div>
 
@@ -162,7 +165,7 @@ export default function EditMedicationPage() {
               onChange={(e) => setIndication(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนข้อบ่งใช้"
+              placeholder="ใช้ในกรณีใด เช่น ลดไข้, แก้ปวด"
             />
           </div>
 

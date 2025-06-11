@@ -43,7 +43,7 @@ export default function AddTreatmentPage() {
   return (
     <div className="container mx-auto p-6 min-h-screen">
       <h1 className="text-4xl font-bold text-gray-800 mb-8 animate-fade-in-down">
-        เพิ่มข้อมูล
+        เพิ่มข้อมูลการรักษา
       </h1>
 
       <form
@@ -77,14 +77,14 @@ export default function AddTreatmentPage() {
             >
               คำอธิบายการรักษา
             </label>
-            <input
-              type="text"
+            <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนคำอธิบายการรักษา"
+              rows={3}
             />
           </div>
 
@@ -95,14 +95,14 @@ export default function AddTreatmentPage() {
             >
               ขั้นตอนการดำเนินการ
             </label>
-            <input
-              type="text"
+            <textarea
               id="procedure"
               value={procedure}
               onChange={(e) => setProcedure(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนขั้นตอนการดำเนินการ"
+              placeholder="ขั้นตอนการดำเนินการ"
+              rows={3}
             />
           </div>
 
@@ -129,7 +129,7 @@ export default function AddTreatmentPage() {
               htmlFor="sideEffect"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
-              ผลข้างเคียงที่อาจเกิดขึ้นจากการรักษา
+              ผลข้างเคียง
             </label>
             <input
               type="text"
@@ -138,7 +138,7 @@ export default function AddTreatmentPage() {
               onChange={(e) => setSideEffect(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนผลข้างเคียงที่อาจเกิดขึ้นจากการรักษา"
+              placeholder="ผลข้างเคียงที่อาจเกิดขึ้นจากการรักษา"
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function AddTreatmentPage() {
               htmlFor="contraindication"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
-              ข้อห้ามใช้วิธีนี้ในบางกรณี
+              ข้อห้ามใช้วิธีนี้
             </label>
             <input
               type="text"
@@ -156,7 +156,7 @@ export default function AddTreatmentPage() {
               onChange={(e) => setContraindication(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนข้อห้ามใช้วิธีนี้ในบางกรณี"
+              placeholder="ข้อห้ามใช้วิธีนี้ในบางกรณี (เช่น ผู้ป่วยโรคหัวใจ)"
             />
           </div>
 

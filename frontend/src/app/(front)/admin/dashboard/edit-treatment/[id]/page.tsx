@@ -64,7 +64,7 @@ export default function EditMedicationPage() {
   return (
     <div className="container mx-auto p-6 min-h-screen">
       <h1 className="text-4xl font-bold text-gray-800 mb-8 animate-fade-in-down">
-        แก้ไขข้อมูล
+        แก้ไขข้อมูลการรักษา
       </h1>
 
       <form
@@ -98,14 +98,14 @@ export default function EditMedicationPage() {
             >
               คำอธิบายการรักษา
             </label>
-            <input
-              type="text"
+            <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนคำอธิบายการรักษา"
+              rows={4}
             />
           </div>
 
@@ -116,14 +116,14 @@ export default function EditMedicationPage() {
             >
               ขั้นตอนการดำเนินการ
             </label>
-            <input
-              type="text"
+            <textarea
               id="procedure"
               value={procedure}
               onChange={(e) => setProcedure(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนขั้นตอนการดำเนินการ"
+              placeholder="ขั้นตอนการดำเนินการ"
+              rows={3}
             />
           </div>
 
