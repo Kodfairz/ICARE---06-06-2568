@@ -90,6 +90,7 @@ export default function ImageLibrary() {
       await axios.post(`${API}/images`, {
         image_name: newImage.ImageName,
         image_url: newImage.ImageURL,
+        credit: newImage.Credit,
       });
       toast.success("เพิ่มข้อมูลรูปภาพสำเร็จ");
       setIsModalOpenAdd(false); // ปิด modal
@@ -122,6 +123,7 @@ export default function ImageLibrary() {
       await axios.put(`${API}/images/${idImage}`, {
         image_name: newImage.ImageName,
         image_url: newImage.ImageURL,
+        credit: newImage.Credit,
       });
       toast.success("แก้ไขรูปภาพสำเร็จ");
       setIsModalOpenEdit(false);
@@ -149,7 +151,7 @@ export default function ImageLibrary() {
         ),
       },
       { header: "ชื่อรูปภาพ", accessorKey: "ImageName" }, // แสดง username
-      { header: "ลิงก์รูปภาพ", accessorKey: "ImageURL" }, // แสดง username
+      { header: "ลิงก์รูปภาพ", accessorKey: "Credit" }, // แสดง username
       {
         header: "เครื่องมือ",
         id: "actions",
@@ -225,8 +227,8 @@ export default function ImageLibrary() {
         open={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={() => handleDeleteUser(imageIdToDelete)}
-        title="ยืนยันการลบผู้ใช้"
-        description="คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+        title="ยืนยันการลบรูปภาพ"
+        description="คุณแน่ใจหรือไม่ว่าต้องการลบรูปภาพนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
       />
 
       {/* ตารางแสดงข้อมูล */}

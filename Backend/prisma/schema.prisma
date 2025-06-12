@@ -111,6 +111,7 @@ model imagelibrary {
   ImageID        Int              @id @default(autoincrement())
   ImageName      String           @db.VarChar(255)
   ImageURL       String           @db.VarChar(255)
+  Credit         String           @db.VarChar(255)
   healtharticles healtharticles[]
   videoarticles  videoarticles[]
 }

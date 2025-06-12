@@ -10,7 +10,7 @@ import { useDropzone } from "react-dropzone";
 // ประกาศฟังก์ชันคอมโพเนนต์ AddImageModal ซึ่งรับ props 2 ตัวคือ onClose และ onSubmit
 export default function AddImageModal({ onClose, onSubmit }) {
     // สร้าง state เก็บข้อมูลผู้ใช้ใหม่ โดยเริ่มจาก AdminName และ password เป็นค่าว่าง
-    const [newImage, setNewImage] = useState({ ImageName: "", ImageURL: "" });
+    const [newImage, setNewImage] = useState({ ImageName: "", ImageURL: "", Credit: "" });
 
     const handleImageUpload = async (file) => {
     if (!file) {
@@ -64,7 +64,7 @@ export default function AddImageModal({ onClose, onSubmit }) {
     const handleSubmit = (event) => {
         event.preventDefault(); // ป้องกันไม่ให้หน้าเว็บรีเฟรชตามปกติของฟอร์ม
         onSubmit(newImage); // เรียกฟังก์ชัน onSubmit ที่ส่งมาจาก props พร้อมข้อมูลผู้ใช้ใหม่
-        setNewImage({ ImageName: "", ImageURL: "" }); // เคลียร์ข้อมูลฟอร์มให้ว่างหลังส่งข้อมูลแล้ว
+        setNewImage({ ImageName: "", ImageURL: "", Credit: "" }); // เคลียร์ข้อมูลฟอร์มให้ว่างหลังส่งข้อมูลแล้ว
     };
 
     return (
@@ -116,6 +116,15 @@ export default function AddImageModal({ onClose, onSubmit }) {
                             />
                             )}
                         </div>
+                        {/* ช่องกรอก เครดิตรูปภาพ */}
+                        <input
+                            type="url"
+                            placeholder="เครดิตรูปภาพ"
+                            onChange={(e) => setNewImage({ ...newImage, Credit: e.target.value })} 
+                            // เมื่อเปลี่ยนแปลง input จะอัปเดต state โดยไม่ลบค่าอื่น ๆ (spread operator ...)
+                            required // กำหนดให้ช่องนี้ต้องกรอก
+                            className="w-full mt-4 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        />
                     </div>
                     <div className="flex gap-4">
                         {/* ปุ่ม submit ฟอร์ม */}

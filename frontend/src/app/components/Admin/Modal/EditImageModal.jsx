@@ -18,7 +18,7 @@ export default function EditImageModal({ onClose, onSubmit, id }) {
     // onSubmit - ฟังก์ชันสำหรับส่งข้อมูลเมื่อแก้ไขเสร็จ
     // id - รหัสผู้ใช้ที่จะแก้ไขข้อมูล
 
-    const [image, setImage] = useState({ ImageName: "", ImageURL: "" });
+    const [image, setImage] = useState({ ImageName: "", ImageURL: "", Credit: "" });
     // กำหนด state สำหรับเก็บข้อมูลผู้ใช้ใหม่ในแบบฟอร์ม (เริ่มต้นเป็น AdminName ว่าง)
 
     const handleSubmit = (event) => {
@@ -28,7 +28,7 @@ export default function EditImageModal({ onClose, onSubmit, id }) {
         onSubmit(image); 
         // เรียกฟังก์ชัน onSubmit ส่งข้อมูล newUser กลับไปให้ parent component
 
-        setImage({ ImageName: "", ImageURL: "" }); 
+        setImage({ ImageName: "", ImageURL: "", Credit: "" }); 
         // ล้างข้อมูลฟอร์มหลัง submit
     };
 
@@ -148,6 +148,16 @@ export default function EditImageModal({ onClose, onSubmit, id }) {
                         </div>
                     </div>
                     {/* ช่องกรอก ImageURL */}
+                    <input
+                        type="text"
+                        placeholder="เครดิตรูปภาพ"
+                        value={image.Credit} // ผูกค่า input กับ state newUser.AdminName
+                        onChange={(e) => setImage({ ...image, Credit: e.target.value })} 
+                        // เมื่อเปลี่ยนแปลง input จะอัปเดต state โดยไม่ลบค่าอื่น ๆ (spread operator ...)
+                        required // กำหนดให้ช่องนี้ต้องกรอก
+                        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                    />
+                    {/* ช่องกรอก เครดิตรูปภาพ */}
 
                     <div className="flex gap-4">
                         <button

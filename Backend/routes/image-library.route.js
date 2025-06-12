@@ -41,6 +41,7 @@ export const ImageRoutes = new Elysia({ prefix: "/images" })
             data: {
                 ImageName: body.image_name,
                 ImageURL: body.image_url,
+                Credit: body.credit,
             }
         })
 
@@ -58,6 +59,7 @@ export const ImageRoutes = new Elysia({ prefix: "/images" })
             data: {
                 ImageName: body.image_name,
                 ImageURL: body.image_url,
+                Credit: body.credit,
             }
         })
 

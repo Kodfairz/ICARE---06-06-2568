@@ -246,8 +246,8 @@ export default function VideoLibrary() {
         open={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={() => handleDeleteVideo(videoIdToDelete)}
-        title="ยืนยันการลบผู้ใช้"
-        description="คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+        title="ยืนยันการลบวิดีโอ"
+        description="คุณแน่ใจหรือไม่ว่าต้องการลบวิดีโอนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
       />
 
       {/* ตารางแสดงข้อมูล */}
