@@ -87,13 +87,13 @@ export default function Home() {
       <main className="p-4">
         {/* ส่วนแนะนำหลัก */}
         <section className="text-center py-12">
-          <h2 className="text-3xl text-blue-600 font-bold font-anakotmai">รู้ทันทุกสถานการณ์ฉุกเฉิน</h2>
-          <h2 className="text-3xl text-blue-600 font-bold font-anakotmai"><center>คู่มือโรคและอุบัติเหตุสำหรับคุณ</center></h2>
-          <p className="text-lg text-gray-600 my-4 font-anakotmai">เรียนรู้วิธีป้องกันและจัดการโรคหรืออุบัติเหตุ</p>
+          <h2 className="text-2xl sm:text-4xl text-blue-600 font-bold font-anakotmai">รู้ทันทุกสถานการณ์ฉุกเฉิน</h2>
+          <h2 className="text-2xl sm:text-4xl text-blue-600 font-bold font-anakotmai"><center>คู่มือโรคและอุบัติเหตุสำหรับคุณ</center></h2>
+          <p className="text-lg sm:text-xl text-gray-600 my-4 font-anakotmai">เรียนรู้วิธีป้องกันและจัดการโรคหรืออุบัติเหตุ</p>
         </section>
 
         {/* ส่วนแสดงโพสต์แนะนำ */}
-        <section className="text-center py-8">
+        <section className="text-center">
           <h3 className="text-xl text-white mb-10 px-4 py-2 bg-green-600 rounded-md w-full ml-0 font-anakotmai">โรคภัยและอุบัติเหตุใกล้ตัว</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -104,8 +104,8 @@ export default function Home() {
                   alt={item.imagelibrary.ImageName}
                   className="w-full h-auto max-h-48 object-contain rounded-xl mb-4"
                 />
-                <h4 className="text-lg text-gray-700 mb-2">{item.diseases.DiseaseName}</h4>
-                <h5 className='mb-2'>ประเภทข้อมูล {item.diseases.categories.CategoryName}</h5>
+                <h4 className="text-lg font-medium text-gray-800 mb-2">{item.diseases.DiseaseName}</h4>
+                <h5 className='text-sm text-gray-500 mb-4'>ประเภทข้อมูล {item.diseases.categories.CategoryName}</h5>
                 <Link href={`/post/${item.HealthArticleID}`} className="inline-block px-6 py-2 text-white bg-blue-500 rounded-md transition duration-300 transform hover:bg-blue-700 hover:scale-105 font-anakotmai">
                   ดูข้อมูล
                 </Link>
