@@ -139,6 +139,15 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         }
     })
 
+    await prisma.videoarticles.update({
+        where : {
+            VideoArticleID : Number(params.id)            // อัปเดตจำนวนวิวเพิ่ม 1
+        },
+        data : {
+            Views : video.Views + 1
+        }
+    })
+
     return {
         "resultData" : video                 // ส่งข้อมูลวิดีโอกลับ
     }
