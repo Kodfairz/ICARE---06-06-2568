@@ -17,6 +17,7 @@ const PostDetail = () => {
   const router = useRouter();
 
   const [post, setPost] = useState({});
+  const [feedback, setFeedback] = useState("");
   const [activeTab, setActiveTab] = useState("content");
   const [fadeIn, setFadeIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +32,22 @@ const PostDetail = () => {
       console.log(error);
       toast.error(error.response?.message || "ไม่สามารถเรียกข้อมูลได้");
       setIsLoading(false);
+    }
+  };
+
+  // ฟังก์ชันส่งข้อเสนอแนะไปยัง API
+  const sendFeedback = async (event) => {
+    try {
+      event.preventDefault(); // ป้องกันหน้าเว็บรีเฟรชเมื่อ submit form
+      const response = await axios.post(`${API}/comments`, {
+        value: feedback,
+        id: post.HealthArticleID,
+      });
+      setFeedback("");  // เคลียร์ข้อความหลังส่ง
+      toast.success("ส่งข้อความสำเร็จ");  // แจ้งเตือนสำเร็จ\
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.message || "ไม่สามารถส่งข้อความได้");
     }
   };
 
@@ -180,6 +197,26 @@ const PostDetail = () => {
             {renderVideoPreview(post.videolibrary.VideoURL)}
           </section>
         )}
+
+        {/* ฟอร์มส่งข้อเสนอแนะ */}
+        <div className="w-full font-anakotmai mt-8">
+          <h4 className="text-lg text-gray-500 mb-2">ข้อเสนอแนะเกี่ยวกับบทความนี้</h4>
+          <form onSubmit={sendFeedback}>
+            <textarea
+              value={feedback}
+              placeholder="พิมพ์ข้อความของคุณ..."
+              onChange={(e) => setFeedback(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md mb-2 text-black"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-8 py-3 rounded-md transition duration-300 hover:bg-green-700"
+            >
+              ส่ง
+            </button>
+          </form>
+        </div>
 
         <section className="mt-10 max-w-4xl mx-auto px-2 sm:px-0 text-gray-600 space-y-2 text-xs sm:text-sm md:text-base">
           <div>

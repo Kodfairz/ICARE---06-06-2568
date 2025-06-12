@@ -9,9 +9,10 @@ export const commentRoutes = new Elysia({ prefix : "/comments" })
     // POST /comments - เพิ่มความคิดเห็นใหม่
     .post("/", async ({ body }) => {
         // สร้างคอมเมนต์ใหม่จากข้อมูลที่ส่งมาใน body
-        const comment = await prisma.comments.create({
+        const comment = await prisma.feedbacks.create({
             data : {
-                value : body.value // ใส่ค่าข้อความความคิดเห็น
+                FeedbackText : body.value, // ใส่ค่าข้อความความคิดเห็น
+                HealthArticleID : body.id
             }
         })
 
@@ -26,10 +27,17 @@ export const commentRoutes = new Elysia({ prefix : "/comments" })
     })
 
     // GET /comments - ดึงความคิดเห็นทั้งหมด เรียงจากล่าสุดก่อน
-    .get("/", async ({ body }) => {
-        const comments = await prisma.comments.findMany({
+    .get("/", async () => {
+        const comments = await prisma.feedbacks.findMany({
             orderBy: {
-                created_at: 'desc' // เรียงตามเวลาสร้างล่าสุด
+                CreatedAt: 'desc' // เรียงตามเวลาสร้างล่าสุด
+            },
+            include: {
+                healtharticles: {
+                    include: {
+                        diseases: true
+                    }
+                }
             }
         })
 
