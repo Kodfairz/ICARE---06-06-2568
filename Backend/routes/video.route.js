@@ -135,6 +135,7 @@ export const videoRoutes = new Elysia({ prefix : "/video" })
         include : {                          // รวมข้อมูลผู้ใช้ที่เกี่ยวข้องกับ video
             videolibrary: true,              // รวมข้อมูลวิดีโอ
             imagelibrary: true,
+            admins: true,
         }
     })
 

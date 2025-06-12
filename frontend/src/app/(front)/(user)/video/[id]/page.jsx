@@ -94,7 +94,7 @@ const Video = () => {
 
       {/* ปุ่มย้อนกลับ */}
       <button
-        onClick={() => router.push("/video")}
+        onClick={() => router.back()}
         className="mb-6 flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl shadow-sm hover:shadow-lg hover:bg-gray-100 hover:text-indigo-600 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95"
       >
         <svg
@@ -116,15 +116,15 @@ const Video = () => {
 
       {/* ชื่อวิดีโอ */}
       <h1 className={`text-3xl font-bold mb-4 text-gray-800 ${fadeInClass}`}>
-        {video.title}
+        {video.Title}
       </h1>
 
       {/* preview วิดีโอ */}
-      <div className={fadeInClass}>{renderVideoPreview(video.url)}</div>
+      <div className={fadeInClass}>{renderVideoPreview(video.videolibrary.VideoURL)}</div>
 
       {/* คำอธิบายวิดีโอ */}
       <p className={`mt-4 text-gray-600 whitespace-pre-line ${fadeInClass}`}>
-        {video.description}
+        {video.Description}
       </p>
 
       {/* ข้อมูลเพิ่มเติม (thumbnail + user info) */}
@@ -133,26 +133,26 @@ const Video = () => {
         className={`mt-6 flex items-center gap-4 ${detailsClass}`}
       >
         <img
-          src={video.thumbnail_url}
+          src={video.imagelibrary.ImageURL}
           width={120}
           height={70}
-          alt={video.title}
+          alt={video.imagelibrary.ImageURL}
           className="rounded-md shadow-md object-cover"
         />
         <div>
           <p className="text-sm text-gray-500">
-            สร้างโดย: {video.users_video_links_user_idTousers.username}
+            สร้างโดย: {video.admins.AdminName}
           </p>
           <p className="text-sm text-gray-500">
-            อัปเดตล่าสุดโดย: {video.users_video_links_update_idTousers.username}
+            อัปเดตล่าสุดโดย: {video.admins.AdminName}
           </p>
           <p className="text-sm text-gray-500">
-            สร้างเมื่อ: {new Date(video.created_at).toLocaleDateString("th-TH")}
+            สร้างเมื่อ: {new Date(video.CreatedAt).toLocaleDateString("th-TH")}
           </p>
           <p className="text-sm text-gray-500">
-            อัปเดตล่าสุด: {new Date(video.updated_at).toLocaleDateString("th-TH")}
+            อัปเดตล่าสุด: {new Date(video.UpdatedAt).toLocaleDateString("th-TH")}
           </p>
-          <p className="text-sm text-gray-500">ดูแล้ว: {video.views} ครั้ง</p>
+          <p className="text-sm text-gray-500">ดูแล้ว: {video.Views} ครั้ง</p>
           <span
             className={`inline-block mt-2 px-2 py-1 rounded ${
               video.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"

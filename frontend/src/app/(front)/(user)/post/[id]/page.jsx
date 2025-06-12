@@ -91,7 +91,7 @@ const PostDetail = () => {
 
         {/* ปุ่มย้อนกลับ */}
         <button
-          onClick={() => router.push("/posts")}
+          onClick={() => router.back()}
           className="mb-6 flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl shadow-sm hover:shadow-lg hover:bg-gray-100 hover:text-indigo-600 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95"
         >
           <svg
@@ -112,17 +112,17 @@ const PostDetail = () => {
         </button>
 
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 break-words">
-          {post?.title}
+          {post?.diseases.DiseaseName}
         </h1>
         <h2 className="text-base sm:text-lg text-indigo-600 font-semibold mb-6 break-words">
-          {post?.category ? `ประเภทข้อมูล: ${post.category.name}` : "ประเภทข้อมูล: -"}
+          {post?.diseases.categories ? `ประเภทข้อมูล: ${post.diseases.categories.CategoryName}` : "ประเภทข้อมูล: -"}
         </h2>
 
         {post?.cover_image_url && (
           <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
             <img
-              src={post.cover_image_url}
-              alt={post.title || "Cover Image"}
+              src={post.imagelibrary.ImageURL}
+              alt={post.imagelibrary.ImageNmae || "Cover Image"}
               className="w-full h-auto object-cover max-w-full"
               loading="lazy"
             />
@@ -166,44 +166,46 @@ const PostDetail = () => {
                 : "opacity-0 translate-y-6"
             }`}
         >
-          {activeTab === "content" && renderHTML(post?.content?.detail)}
-          {activeTab === "symptom" && renderHTML(post?.symptom?.detail)}
-          {activeTab === "situation" && renderHTML(post?.situation?.detail)}
-          {activeTab === "protection" && renderHTML(post?.protection?.detail)}
+          {activeTab === "content" && renderHTML(post?.diseases?.RiskFactors)}
+          {activeTab === "symptom" && renderHTML(post?.diseases?.Symptoms)}
+          {activeTab === "situation" && renderHTML(post?.diseases?.Diagnosis)}
+          {activeTab === "protection" && renderHTML(post?.diseases?.Prevention)}
         </div>
 
-        {post?.video_link && post.video_link.length > 5 && (
+        {post?.videolibrary && (
           <section className="mt-10 max-w-4xl mx-auto px-2 sm:px-0">
             <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5">
               วิดีโอแนะนำ
             </h3>
-            {renderVideoPreview(post.video_link)}
+            {renderVideoPreview(post.videolibrary.VideoURL)}
           </section>
         )}
 
         <section className="mt-10 max-w-4xl mx-auto px-2 sm:px-0 text-gray-600 space-y-2 text-xs sm:text-sm md:text-base">
           <div>
             จำนวนผู้เข้าชม:{" "}
-            <span className="font-semibold">{post?.views ?? "-"}</span>
+            <span className="font-semibold">{post?.Views ?? "-"}</span>
           </div>
           <div>
-            เผยแพร่ล่าสุด:{" "}
+            เผยแพร่เมื่อ:{" "}
             <span className="font-semibold">
-              {post?.updated_at
-                ? dayjs(post.updated_at).format("DD MMMM YYYY")
+              {post?.CreatedAt
+                ? dayjs(post.CreatedAt).format("DD MMMM YYYY")
+                : "-"}
+            </span>
+          </div>
+          <div>
+            อัปเดตล่าสุดเมื่อ:{" "}
+            <span className="font-semibold">
+              {post?.articleedits
+                ? dayjs(post.articleedits.EditDate).format("DD MMMM YYYY")
                 : "-"}
             </span>
           </div>
           <div>
             ผู้เผยแพร่:{" "}
             <span className="font-semibold">
-              {post?.users_posts_user_idTousers?.username ?? "-"}
-            </span>
-          </div>
-          <div>
-            ผู้แก้ไขล่าสุด:{" "}
-            <span className="font-semibold">
-              {post?.users_posts_user_update_idTousers?.username ?? "-"}
+              {post?.admins?.AdminName ?? "-"}
             </span>
           </div>
         </section>

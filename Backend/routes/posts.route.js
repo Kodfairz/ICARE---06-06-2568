@@ -253,12 +253,22 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
     // GET /posts/user/:id - ดูโพสต์เฉพาะ ID และเพิ่มยอด View
     .get("/user/:id", async ({ params }) => {
         const healtharticles = await prisma.healtharticles.findFirst({
-            where : { id : Number(params.id) },
-            include : {
-                diseases: true,
-                category: true,
+            where : { HealthArticleID : Number(params.id) },
+            include: {
+                diseases: {
+                    include : {
+                        categories : true
+                    },
+                },
+                videolibrary: true,
                 imagelibrary: true,
-                videolibrary: true
+                admins: true,
+                articleedits : {
+                    orderBy : {
+                        EditDate : 'desc'
+                    },
+                    take : 1
+                },
             }
         })
 
