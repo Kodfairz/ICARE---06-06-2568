@@ -135,11 +135,11 @@ const PostDetail = () => {
           {post?.diseases.categories ? `ประเภทข้อมูล: ${post.diseases.categories.CategoryName}` : "ประเภทข้อมูล: -"}
         </h2>
 
-        {post?.cover_image_url && (
+        {post?.imagelibrary && (
           <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
             <img
               src={post.imagelibrary.ImageURL}
-              alt={post.imagelibrary.ImageNmae || "Cover Image"}
+              alt={post.imagelibrary.ImageName}
               className="w-full h-auto object-cover max-w-full"
               loading="lazy"
             />
