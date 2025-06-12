@@ -40,6 +40,9 @@ export default function Medic_Treatment() {
   const [userId, setUserId] = useState(null);
   // สถานะเก็บ id ของผู้ใช้ที่ล็อกอินอยู่
 
+  const [disease, setDisease] = useState([]);
+  // สถานะเก็บข้อมูลข้อมูลยาที่ดึงมาจาก API
+
   const [medics, setMedics] = useState([]);
   // สถานะเก็บข้อมูลข้อมูลยาที่ดึงมาจาก API
 
@@ -83,6 +86,19 @@ export default function Medic_Treatment() {
   }, []);
 
   // ฟังก์ชันดึงข้อมูลข้อมูลยาจาก API
+  const getDisease = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API}/posts/${id}`);
+      setDisease(response.data.resultData); // เก็บข้อมูลข้อมูลยาลง state
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.message || "ไม่สามารถเรียกข้อมูลได้"); // แจ้งเตือนถ้าดึงข้อมูลไม่สำเร็จ
+    }
+    setIsLoading(false);
+  };
+
+  // ฟังก์ชันดึงข้อมูลข้อมูลยาจาก API
   const getMedics = async () => {
     setIsLoading(true);
     try {
@@ -111,6 +127,7 @@ export default function Medic_Treatment() {
   // ดึงข้อมูลข้อมูลยาครั้งแรกตอน component โหลด
   useEffect(() => {
     if (userId) {
+      getDisease();
       getMedics();
       getTreatments();
     }
@@ -363,7 +380,7 @@ export default function Medic_Treatment() {
       <Tabs aria-label="Options">
         <Tab key="medications" title="จัดการข้อมูลยา">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            จัดการข้อมูลยาของโรค {medics[0]?.diseases?.DiseaseName}
+            จัดการข้อมูลยาของโรค {disease?.diseases.DiseaseName}
           </h2>
 
           {/* ปุ่มเพิ่มข้อมูลยา เปลี่ยนหน้าไปยังฟอร์มเพิ่มข้อมูลยา */}
@@ -438,7 +455,7 @@ export default function Medic_Treatment() {
         </Tab>
         <Tab key="treatments" title="จัดการข้อมูลการรักษา">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            จัดการข้อมูลการรักษาของโรค {treatments[0]?.diseases?.DiseaseName}
+            จัดการข้อมูลการรักษาของโรค {disease?.diseases.DiseaseName}
           </h2>
 
           {/* ปุ่มเพิ่มข้อมูลการรักษา เปลี่ยนหน้าไปยังฟอร์มเพิ่มข้อมูลการรักษา */}
