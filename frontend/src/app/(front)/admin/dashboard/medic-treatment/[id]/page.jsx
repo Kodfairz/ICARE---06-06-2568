@@ -380,7 +380,7 @@ export default function Medic_Treatment() {
       <Tabs aria-label="Options">
         <Tab key="medications" title="จัดการข้อมูลยา">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            จัดการข้อมูลยาของโรค {disease?.diseases.DiseaseName}
+            จัดการข้อมูลยาของโรค {disease?.diseases?.DiseaseName}
           </h2>
 
           {/* ปุ่มเพิ่มข้อมูลยา เปลี่ยนหน้าไปยังฟอร์มเพิ่มข้อมูลยา */}
@@ -455,7 +455,7 @@ export default function Medic_Treatment() {
         </Tab>
         <Tab key="treatments" title="จัดการข้อมูลการรักษา">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            จัดการข้อมูลการรักษาของโรค {disease?.diseases.DiseaseName}
+            จัดการข้อมูลการรักษาของโรค {disease?.diseases?.DiseaseName}
           </h2>
 
           {/* ปุ่มเพิ่มข้อมูลการรักษา เปลี่ยนหน้าไปยังฟอร์มเพิ่มข้อมูลการรักษา */}
