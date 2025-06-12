@@ -146,13 +146,20 @@ const PostDetail = () => {
           </div>
         )}
 
+        <div className="mb-8">
+          <p className="text-xl font-bold">คำอธิบาย</p>
+          <p>{post.diseases.Description}</p>
+        </div>
+
         <div className="flex flex-wrap justify-center gap-3 mb-8">
-          {["content", "symptom", "situation", "protection"].map((field) => {
+          {["content", "symptom", "situation", "protection", "medications", "treatments"].map((field) => {
             let label = "";
             if (field === "content") label = "รายละเอียดของโรค";
             else if (field === "symptom") label = "อาการของโรค";
             else if (field === "situation") label = "การติดต่อ";
             else if (field === "protection") label = "วิธีดูแล และ การป้องกัน";
+            else if (field === "medications") label = "ยา";
+            else if (field === "treatments") label = "การรักษา";
 
             return (
               <button
@@ -187,6 +194,40 @@ const PostDetail = () => {
           {activeTab === "symptom" && renderHTML(post?.diseases?.Symptoms)}
           {activeTab === "situation" && renderHTML(post?.diseases?.Diagnosis)}
           {activeTab === "protection" && renderHTML(post?.diseases?.Prevention)}
+          {activeTab === "medications" && (
+            <ul className="list-disc pl-5">
+              {post?.diseases?.disease_medications?.map((item, index) => (
+                <li key={index}>
+                  <strong>{item.medications.MedicationName}</strong> (
+                  {item.medications.GenericName}) - {item.medications.Strength}
+                  <br />
+                  <span className="text-sm text-gray-600">
+                    <strong>รูปแบบยา:</strong> {item.medications.DosageForm}<br />
+                    <strong>ข้อบ่งใช้:</strong> {item.medications.Indications}<br />
+                    <strong>ผลข้างเคียง:</strong> {item.medications.SideEffects}<br />
+                    <strong>ข้อห้ามใช้:</strong> {item.medications.Contraindications}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {activeTab === "treatments" && (
+            <ul className="list-disc pl-5">
+              {post?.diseases?.disease_treatments?.map((item, index) => (
+                <li key={index}>
+                  <strong>{item.treatments.TreatmentName}</strong>
+                  <br />
+                  <span className="text-sm text-gray-600">
+                    <strong>รายละเอียด:</strong> {item.treatments.Description}<br />
+                    <strong>ขั้นตอน:</strong> {item.treatments.Procedures}<br />
+                    <strong>ระยะเวลา:</strong> {item.treatments.Duration}<br />
+                    <strong>ผลข้างเคียง:</strong> {item.treatments.SideEffects}<br />
+                    <strong>ข้อห้ามใช้:</strong> {item.treatments.Contraindications}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {post?.videolibrary && (

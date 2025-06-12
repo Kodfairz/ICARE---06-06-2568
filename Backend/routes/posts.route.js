@@ -262,7 +262,17 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
             include: {
                 diseases: {
                     include : {
-                        categories : true
+                        categories : true,
+                        disease_medications : {
+                            include : {
+                                medications : true,
+                            },
+                        },
+                        disease_treatments : {
+                            include : {
+                                treatments : true,
+                            },
+                        },
                     },
                 },
                 videolibrary: true,
