@@ -60,7 +60,7 @@ export default function AddTreatmentPage() {
               htmlFor="treatmentName"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
-              ชื่อการรักษา
+              วิธีการรักษา
             </label>
             <input
               type="text"
@@ -69,7 +69,7 @@ export default function AddTreatmentPage() {
               onChange={(e) => setTreatmentName(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="ป้อนชื่อการรักษา"
+              placeholder="ป้อนวิธีการรักษา"
             />
           </div>
 

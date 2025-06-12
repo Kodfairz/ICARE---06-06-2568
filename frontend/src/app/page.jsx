@@ -179,26 +179,8 @@ export default function Home() {
             </p>
           </div>
 
-          {/* ฟอร์มส่งข้อความถึงเรา */}
-          <div className="w-full md:w-2/5 font-anakotmai mt-8 md:mt-0">
-            <h4 className="text-xl font-bold text-blue-300 mb-4">ส่งข้อความหาเรา</h4>
-            <form onSubmit={sendMessage}>
-              <input
-                type="text"
-                value={comment}
-                placeholder="พิมพ์ข้อความของคุณ..."
-                onChange={(e) => setComment(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-md mb-4 text-black"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-green-600 text-white px-8 py-3 rounded-md transition duration-300 hover:bg-green-700"
-              >
-                ส่ง
-              </button>
-            </form>
-          </div>
+       
+          
         </div>
 
         {/* ลิขสิทธิ์ */}
