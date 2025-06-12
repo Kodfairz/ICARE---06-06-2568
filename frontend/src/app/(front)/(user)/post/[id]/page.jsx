@@ -183,29 +183,22 @@ const PostDetail = () => {
 
         <section className="mt-10 max-w-4xl mx-auto px-2 sm:px-0 text-gray-600 space-y-2 text-xs sm:text-sm md:text-base">
           <div>
-            จำนวนผู้เข้าชม:{" "}
-            <span className="font-semibold">{post?.Views ?? "-"}</span>
-          </div>
-          <div>
-            เผยแพร่เมื่อ:{" "}
-            <span className="font-semibold">
-              {post?.CreatedAt
-                ? dayjs(post.CreatedAt).format("DD MMMM YYYY")
-                : "-"}
-            </span>
-          </div>
-          <div>
-            อัปเดตล่าสุดเมื่อ:{" "}
-            <span className="font-semibold">
-              {post?.articleedits
-                ? dayjs(post.articleedits.EditDate).format("DD MMMM YYYY")
-                : "-"}
-            </span>
-          </div>
-          <div>
-            ผู้เผยแพร่:{" "}
-            <span className="font-semibold">
-              {post?.admins?.AdminName ?? "-"}
+            <p className="text-sm text-gray-500">
+              เผยแพร่โดย: {post?.admins?.AdminName ?? "-"}
+            </p>
+            <p className="text-sm text-gray-500">
+              เผยแพร่เมื่อ: {post?.CreatedAt ? dayjs(post.CreatedAt).format("DD MMMM YYYY") : "-"}
+            </p>
+            <p className="text-sm text-gray-500">
+              อัปเดตล่าสุดเมื่อ: {post?.articleedits ? dayjs(post.articleedits.EditDate).format("DD MMMM YYYY") : "-"}
+            </p>
+            <p className="text-sm text-gray-500">ดูแล้ว: {post?.Views ?? "-"} ครั้ง</p>
+            <span
+              className={`inline-block mt-2 px-2 py-1 rounded ${
+                post.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+              }`}
+            >
+              {post.isActive ? "เผยแพร่แล้ว" : "ยังไม่เผยแพร่"}
             </span>
           </div>
         </section>

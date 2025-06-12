@@ -24,7 +24,7 @@ export default function Posts() {
 
       setPosts(postRes.data.resultData);
 
-      const fetchedCategories = categoryRes.data.resultData.map(cat => cat.name);
+      const fetchedCategories = categoryRes.data.resultData.map(cat => cat.CategoryName);
 
       const desiredOrder = ['ทั้งหมด', 'โรคทั่วไป', 'ศีรษะ', 'ลำตัว', 'ลำตัวส่วนล่าง', 'อุบัติเหตุ'];
       const sorted = ['ทั้งหมด', ...desiredOrder.filter(cat => fetchedCategories.includes(cat)), ...fetchedCategories.filter(cat => !desiredOrder.includes(cat))];
@@ -45,7 +45,7 @@ export default function Posts() {
 
   const filteredPosts = posts.filter(post => {
     const matchesCategory = activeCategory === 'ทั้งหมด' || post.category.name === activeCategory;
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = post.diseases.DiseaseName.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -95,18 +95,18 @@ export default function Posts() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredPosts.map((item) => (
             <div
-              key={item.id}
+              key={item.HealthArticleID}
               className={`bg-white p-4 rounded-xl shadow-md text-center font-anakotmai transition duration-300 hover:shadow-xl ${fadeInClass}`}
             >
               <img
-                src={item.cover_image_url}
-                alt={item.title}
+                src={item.imagelibrary.ImageURL}
+                alt={item.imagelibrary.ImageName}
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
-              <h4 className="text-lg font-medium text-gray-800 mb-2">{item.title}</h4>
-              <h5 className="text-sm text-gray-500 mb-4">ประเภทข้อมูล : {item.category.name}</h5>
+              <h4 className="text-lg font-medium text-gray-800 mb-2">{item.diseases.DiseaseName}</h4>
+              <h5 className="text-sm text-gray-500 mb-4">ประเภทข้อมูล : {item.diseases.categories.CategoryName}</h5>
               <Link
-                href={`/post/${item.id}`}
+                href={`/post/${item.HealthArticleID}`}
                 className="inline-block px-4 py-2 bg-blue-500 text-white rounded-lg transition hover:bg-blue-600 hover:scale-105"
               >
                 ดูข้อมูล

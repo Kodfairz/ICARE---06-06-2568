@@ -67,7 +67,12 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
     .get("/", async () => {
         const healtharticles = await prisma.healtharticles.findMany({
             where : { isActive : true },
-            include : { category : true }
+            include : {
+                diseases: {
+                    include: { categories: true }
+                },
+                imagelibrary: true
+            }
         })
 
         if(!healtharticles) throw new Error("ไม่สามารถเรียกข้อมูลได้");
