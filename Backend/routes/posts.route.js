@@ -222,7 +222,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
                 DiseaseName: body.name,
                 Description: body.description,
                 categories: {
-                    connect: { CategoryID: 5 }
+                    connect: { CategoryID: body.category_id }
                 },
                 RiskFactors: body.risk_factors,
                 Prevention: body.prevention,

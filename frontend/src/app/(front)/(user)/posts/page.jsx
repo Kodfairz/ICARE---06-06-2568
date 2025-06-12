@@ -44,7 +44,7 @@ export default function Posts() {
   }, []);
 
   const filteredPosts = posts.filter(post => {
-    const matchesCategory = activeCategory === 'ทั้งหมด' || post.category.name === activeCategory;
+    const matchesCategory = activeCategory === 'ทั้งหมด' || post.diseases.categories.CategoryName === activeCategory;
     const matchesSearch = post.diseases.DiseaseName.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
