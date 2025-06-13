@@ -524,7 +524,7 @@ export default function EditPostPage() {
                 <RenderToolbar editorInstance={symptomEditor} />
                 <EditorContent
                   editor={symptomEditor}
-                  className="border rounded p-4 min-h-[100px]"
+                  className="border rounded p-4 min-h-[150px]"
                 />
               </>
             )}
@@ -533,7 +533,7 @@ export default function EditPostPage() {
                 <RenderToolbar editorInstance={situationEditor} />
                 <EditorContent
                   editor={situationEditor}
-                  className="border rounded p-4 min-h-[100px]"
+                  className="border rounded p-4 min-h-[150px]"
                 />
               </>
             )}
@@ -542,7 +542,7 @@ export default function EditPostPage() {
                 <RenderToolbar editorInstance={protectionEditor} />
                 <EditorContent
                   editor={protectionEditor}
-                  className="border rounded p-4 min-h-[100px]"
+                  className="border rounded p-4 min-h-[150px]"
                 />
               </>
             )}
