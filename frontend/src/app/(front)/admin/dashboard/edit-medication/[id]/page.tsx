@@ -133,6 +133,7 @@ export default function EditMedicationPage() {
               <option value="น้ำ">น้ำ</option>
               <option value="ฉีด">ฉีด</option>
               <option value="ดม">ดม</option>
+              <option value="ทา">ทา</option>
             </select>
           </div>
 

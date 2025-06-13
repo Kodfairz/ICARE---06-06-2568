@@ -141,9 +141,9 @@ model treatments {
 
 model videoarticles {
   VideoArticleID Int          @id @default(autoincrement())
+  AdminID        Int
   ImageID        Int
   VideoID        Int
-  AdminID        Int
   Title          String
   Description    String
   Views          Int

@@ -19,7 +19,7 @@ export default function EditMedicationPage() {
   const router = useRouter();
 
   // ฟังก์ชันดึงข้อมูลยาจาก API
-  const getMedics = async () => {
+  const getTreatment = async () => {
     try {
       const response = await axios.get(`${API}/treatments/${id}`);
       const treatment = response.data.resultData; // เก็บข้อมูลยาลง state
@@ -38,9 +38,9 @@ export default function EditMedicationPage() {
 
   // ดึงข้อมูลยาครั้งแรกตอน component โหลด
   useEffect(() => {
-    getMedics();
+    getTreatment();
   }, []);
-
+  //แจ้งเตือนเวลาแก้ไขสำเร็จ
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
