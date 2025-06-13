@@ -98,6 +98,7 @@ CREATE TABLE `imagelibrary` (
     `ImageID` INTEGER NOT NULL AUTO_INCREMENT,
     `ImageName` VARCHAR(255) NOT NULL,
     `ImageURL` VARCHAR(255) NOT NULL,
+    `Credit` VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (`ImageID`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -132,9 +133,9 @@ CREATE TABLE `treatments` (
 -- CreateTable
 CREATE TABLE `videoarticles` (
     `VideoArticleID` INTEGER NOT NULL AUTO_INCREMENT,
+    `AdminID` INTEGER NOT NULL,
     `ImageID` INTEGER NOT NULL,
     `VideoID` INTEGER NOT NULL,
-    `AdminID` INTEGER NOT NULL,
     `Title` VARCHAR(191) NOT NULL,
     `Description` VARCHAR(191) NOT NULL,
     `Views` INTEGER NOT NULL,
@@ -144,6 +145,7 @@ CREATE TABLE `videoarticles` (
 
     INDEX `VideoID`(`VideoID`),
     INDEX `AdminID`(`AdminID`),
+    INDEX `imagearticles_ibfk_1`(`ImageID`),
     PRIMARY KEY (`VideoArticleID`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -178,7 +180,7 @@ ALTER TABLE `disease_treatments` ADD CONSTRAINT `disease_treatments_ibfk_2` FORE
 ALTER TABLE `diseases` ADD CONSTRAINT `diseases_ibfk_1` FOREIGN KEY (`CategoryID`) REFERENCES `categories`(`CategoryID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`HealthArticleID`) REFERENCES `healtharticles`(`HealthArticleID`) ON DELETE RESTRICT ON UPDATE SET NULL;
+ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`HealthArticleID`) REFERENCES `healtharticles`(`HealthArticleID`) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `diseases`(`DiseaseID`) ON DELETE CASCADE ON UPDATE RESTRICT;
@@ -193,10 +195,10 @@ ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_3` FOREIGN KEY 
 ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_4` FOREIGN KEY (`AdminID`) REFERENCES `admins`(`AdminID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE `videoarticles` ADD CONSTRAINT `videoarticles_ibfk_1` FOREIGN KEY (`VideoID`) REFERENCES `videolibrary`(`VideoID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `videoarticles` ADD CONSTRAINT `imagearticles_ibfk_1` FOREIGN KEY (`ImageID`) REFERENCES `imagelibrary`(`ImageID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE `videoarticles` ADD CONSTRAINT `imagearticles_ibfk_1` FOREIGN KEY (`ImageID`) REFERENCES `imagelibrary`(`ImageID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `videoarticles` ADD CONSTRAINT `videoarticles_ibfk_1` FOREIGN KEY (`VideoID`) REFERENCES `videolibrary`(`VideoID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `videoarticles` ADD CONSTRAINT `videoarticles_ibfk_2` FOREIGN KEY (`AdminID`) REFERENCES `admins`(`AdminID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
