@@ -136,14 +136,17 @@ const PostDetail = () => {
         </h2>
 
         {post?.imagelibrary && (
-          <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
-            <img
-              src={post.imagelibrary.ImageURL}
-              alt={post.imagelibrary.ImageName}
-              className="w-full h-auto object-cover max-w-full"
-              loading="lazy"
-            />
-          </div>
+          <>
+            <div className="mb-2 rounded-xl overflow-hidden shadow-lg">
+              <img
+                src={post.imagelibrary.ImageURL}
+                alt={post.imagelibrary.ImageName}
+                className="w-full h-auto object-cover max-w-full"
+                loading="lazy"
+              />
+            </div>
+            <p className="mb-4 text-xs text-center text-gray-400 italic">ที่มา: <a href={post.imagelibrary.Credit} className="hover:underline">{post.imagelibrary.Credit}</a></p>
+          </>
         )}
 
         <div className="mb-8">
