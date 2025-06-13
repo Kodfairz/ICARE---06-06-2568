@@ -59,16 +59,19 @@ const PostDetail = () => {
       if (match) {
         const videoId = match[1];
         return (
-          <div className="relative w-full max-w-full pb-[56.25%] rounded-lg overflow-hidden shadow-lg">
-            <iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${videoId}`}
-              title="YouTube video"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
+          <>
+            <div className="relative w-full max-w-full pb-[56.25%] rounded-lg overflow-hidden shadow-lg">
+              <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title="YouTube video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <p className="my-2 text-xs text-center text-gray-400 italic">ที่มา: <a href={video.videolibrary.VideoURL} className="hover:underline" target="_blank">{video.videolibrary.VideoURL}</a></p>
+          </>
         );
       }
     }
