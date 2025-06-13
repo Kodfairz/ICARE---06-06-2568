@@ -44,9 +44,11 @@ export const MedicationsRoutes = new Elysia({ prefix: "/medics" })
                 GenericName: body.generic_name,
                 DosageForm: body.dosage,
                 Strength: body.strength,
-                Indications: body.indication,
-                SideEffects: body.side_effect,
-                Contraindications: body.contraindication,
+                Indications: body.indication ? body.indication : "-",
+                SideEffects: body.side_effect ? body.side_effect : "-",
+                Contraindications: body.contraindication ? body.contraindication : "-",
+                SymptomsDrugAllergies: body.symptoms_drug_allergies ? body.symptoms_drug_allergies : "-",
+                TreatDrugAllergies: body.treat_drug_allergies ? body.treat_drug_allergies : "-",
             }
         })
 
@@ -76,6 +78,8 @@ export const MedicationsRoutes = new Elysia({ prefix: "/medics" })
                 Indications: body.indication,
                 SideEffects: body.side_effect,
                 Contraindications: body.contraindication,
+                SymptomsDrugAllergies: body.symptoms_drug_allergies,
+                TreatDrugAllergies: body.treat_drug_allergies,
             }
         })
 

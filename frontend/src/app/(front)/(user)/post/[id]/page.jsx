@@ -70,7 +70,7 @@ const PostDetail = () => {
                 allowFullScreen
               ></iframe>
             </div>
-            <p className="my-2 text-xs text-center text-gray-400 italic">ที่มา: <a href={video.videolibrary.VideoURL} className="hover:underline" target="_blank">{video.videolibrary.VideoURL}</a></p>
+            <p className="my-2 text-xs text-center text-gray-400 italic">ที่มา: <a href={post.videolibrary.VideoURL} className="hover:underline" target="_blank">{post.videolibrary.VideoURL}</a></p>
           </>
         );
       }
@@ -196,43 +196,61 @@ const PostDetail = () => {
                 : "opacity-0 translate-y-6"
             }`}
         >
-          {activeTab === "content" && renderHTML(post?.diseases?.RiskFactors)}
-          {activeTab === "symptom" && renderHTML(post?.diseases?.Symptoms)}
-          {activeTab === "situation" && renderHTML(post?.diseases?.Diagnosis)}
-          {activeTab === "protection" && renderHTML(post?.diseases?.Prevention)}
+          {activeTab === "content" &&
+            (post?.diseases?.RiskFactors ? renderHTML(post.diseases.RiskFactors) : "ไม่มีข้อมูล")}
+
+          {activeTab === "symptom" &&
+            (post?.diseases?.Symptoms ? renderHTML(post.diseases.Symptoms) : "ไม่มีข้อมูล")}
+
+          {activeTab === "situation" &&
+            (post?.diseases?.Diagnosis ? renderHTML(post.diseases.Diagnosis) : "ไม่มีข้อมูล")}
+
+          {activeTab === "protection" &&
+            (post?.diseases?.Prevention ? renderHTML(post.diseases.Prevention) : "ไม่มีข้อมูล")}
+
           {activeTab === "medications" && (
-            <ul className="list-disc pl-5">
-              {post?.diseases?.disease_medications?.map((item, index) => (
-                <li key={index}>
-                  <strong>{item.medications.MedicationName}</strong> (
-                  {item.medications.GenericName}) - {item.medications.Strength}
-                  <br />
-                  <span className="text-sm text-gray-600">
-                    <strong>รูปแบบยา:</strong> {item.medications.DosageForm}<br />
-                    <strong>ข้อบ่งใช้:</strong> {item.medications.Indications}<br />
-                    <strong>ผลข้างเคียง:</strong> {item.medications.SideEffects}<br />
-                    <strong>ข้อห้ามใช้:</strong> {item.medications.Contraindications}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            post?.diseases?.disease_medications?.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {post.diseases.disease_medications.map((item, index) => (
+                  <li key={index}>
+                    <strong>{item.medications.MedicationName}</strong> ({item.medications.GenericName}) - {item.medications.Strength}
+                    <br />
+                    <span className="text-sm text-gray-600">
+                      <strong>รูปแบบยา:</strong> {item.medications.DosageForm}<br />
+                      <strong>ข้อบ่งใช้:</strong> {item.medications.Indications}<br />
+                      <strong>ผลข้างเคียง:</strong> {item.medications.SideEffects}<br />
+                      <strong>ข้อห้ามใช้:</strong> {item.medications.Contraindications}<br />
+                      <strong>อาการสำหรับผู้ที่แพ้ยา:</strong> {item.medications.SymptomsDrugAllergies}<br />
+                      <strong>วิธีการรักษาอาการแพ้ยา:</strong> {item.medications.TreatDrugAllergies}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              "ไม่มีข้อมูล"
+            )
           )}
+
           {activeTab === "treatments" && (
-            <ul className="list-disc pl-5">
-              {post?.diseases?.disease_treatments?.map((item, index) => (
-                <li key={index}>
-                  <strong>{item.treatments.TreatmentName}</strong>
-                  <br />
-                  <span className="text-sm text-gray-600">
-                    <strong>รายละเอียด:</strong> {item.treatments.Description}<br />
-                    <strong>ขั้นตอน:</strong> {item.treatments.Procedures}<br />
-                    <strong>ระยะเวลา:</strong> {item.treatments.Duration}<br />
-                    <strong>ผลข้างเคียง:</strong> {item.treatments.SideEffects}<br />
-                    <strong>ข้อห้ามใช้:</strong> {item.treatments.Contraindications}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            post?.diseases?.disease_treatments?.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {post.diseases.disease_treatments.map((item, index) => (
+                  <li key={index}>
+                    <strong>{item.treatments.TreatmentName}</strong>
+                    <br />
+                    <span className="text-sm text-gray-600">
+                      <strong>รายละเอียด:</strong> {item.treatments.Description}<br />
+                      <strong>ขั้นตอน:</strong> {item.treatments.Procedures}<br />
+                      <strong>ระยะเวลา:</strong> {item.treatments.Duration}<br />
+                      <strong>ผลข้างเคียง:</strong> {item.treatments.SideEffects}<br />
+                      <strong>ข้อห้ามใช้:</strong> {item.treatments.Contraindications}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              "ไม่มีข้อมูล"
+            )
           )}
         </div>
 

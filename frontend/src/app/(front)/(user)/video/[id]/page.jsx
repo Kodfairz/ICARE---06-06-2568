@@ -126,9 +126,10 @@ const Video = () => {
       <div className={fadeInClass}>{renderVideoPreview(video.videolibrary.VideoURL)}</div>
 
       {/* คำอธิบายวิดีโอ */}
-      <p className={`mt-4 text-gray-600 whitespace-pre-line ${fadeInClass}`}>
-        {video.Description}
-      </p>
+      <div className="mt4-8">
+        <p className={`text-xl font-bold ${fadeInClass}`}>คำอธิบาย</p>
+        <p>{video.Description}</p>
+      </div>
 
       {/* ข้อมูลเพิ่มเติม (thumbnail + user info) */}
       <div

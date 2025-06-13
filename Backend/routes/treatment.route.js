@@ -44,8 +44,8 @@ export const TreatmentsRoutes = new Elysia({ prefix: "/treatments" })
                 Description: body.description,
                 Procedures: body.procedure,
                 Duration: body.duration,
-                SideEffects: body.side_effect,
-                Contraindications: body.contraindication,
+                SideEffects: body.side_effect ? body.side_effect : "-",
+                Contraindications: body.contraindication ? body.contraindication : "-",
             }
         })
 

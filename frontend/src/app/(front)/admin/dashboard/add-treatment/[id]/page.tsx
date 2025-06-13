@@ -139,7 +139,6 @@ export default function AddTreatmentPage() {
               id="sideEffect"
               value={sideEffect}
               onChange={(e) => setSideEffect(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ผลข้างเคียงที่อาจเกิดขึ้นจากการรักษา"
             />
@@ -157,7 +156,6 @@ export default function AddTreatmentPage() {
               id="contraindication"
               value={contraindication}
               onChange={(e) => setContraindication(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ข้อห้ามใช้วิธีนี้ในบางกรณี (เช่น ผู้ป่วยโรคหัวใจ)"
             />

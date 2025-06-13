@@ -16,6 +16,8 @@ export default function AddMedicationPage() {
   const [indication, setIndication] = useState("");
   const [sideEffect, setSideEffect] = useState("");
   const [contraindication, setContraindication] = useState("");
+  const [symptomsDrugAllergies, setSymptomsDrugAllergies] = useState("");
+  const [treatDrugAllergies, setTreatDrugAllergies] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -32,6 +34,8 @@ export default function AddMedicationPage() {
         indication: indication,
         side_effect: sideEffect,
         contraindication: contraindication,
+        symptoms_drug_allergies: symptomsDrugAllergies,
+        treat_drug_allergies: treatDrugAllergies,
         disease_id: id,
       });
       if (response.status === 200) {
@@ -68,9 +72,9 @@ export default function AddMedicationPage() {
               id="MedicationName"
               value={medicationName}
               onChange={(e) => setMedicationName(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนชื่อยา"
+              required
             />
           </div>
 
@@ -86,9 +90,9 @@ export default function AddMedicationPage() {
               id="genericName"
               value={genericName}
               onChange={(e) => setGenericName(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนชื่อสามัญทางยา"
+              required
             />
           </div>
 
@@ -103,8 +107,8 @@ export default function AddMedicationPage() {
               id="dosageForm"
               value={dosageForm}
               onChange={(e) => setDosageForm(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              required
             >
               <option value="">-- เลือกรูปแบบยา --</option>
               <option value="เม็ด">เม็ด</option>
@@ -127,9 +131,9 @@ export default function AddMedicationPage() {
               id="strength"
               value={strength}
               onChange={(e) => setStrength(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ขนาดโดส เช่น 500mg"
+              required
             />
           </div>
 
@@ -145,7 +149,6 @@ export default function AddMedicationPage() {
               id="indication"
               value={indication}
               onChange={(e) => setIndication(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ใช้ในกรณีใด เช่น ลดไข้, แก้ปวด"
             />
@@ -163,7 +166,6 @@ export default function AddMedicationPage() {
               id="sideEffect"
               value={sideEffect}
               onChange={(e) => setSideEffect(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนผลข้างเคียง"
             />
@@ -181,9 +183,42 @@ export default function AddMedicationPage() {
               id="contraindication"
               value={contraindication}
               onChange={(e) => setContraindication(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนข้อห้าม"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="symptomsDrugAllergies"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              อาการสำหรับผู้ที่แพ้ยา
+            </label>
+            <input
+              type="text"
+              id="symptomsDrugAllergies"
+              value={symptomsDrugAllergies}
+              onChange={(e) => setSymptomsDrugAllergies(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนอาการสำหรับผู้ที่แพ้ยา"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="treatDrugAllergies"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              วิธีการรักษาอาการแพ้ยา
+            </label>
+            <textarea
+              id="treatDrugAllergies"
+              value={treatDrugAllergies}
+              onChange={(e) => setTreatDrugAllergies(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนวิธีการรักษาอาการแพ้ยา"
+              rows={3}
             />
           </div>
 

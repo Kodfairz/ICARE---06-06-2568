@@ -120,11 +120,13 @@ model medications {
   MedicationID        Int                   @id @default(autoincrement())
   MedicationName      String                @db.VarChar(255)
   GenericName         String?               @db.VarChar(255)
-  DosageForm          String?               @db.VarChar(50)
+  DosageForm          String?               @db.VarChar(100)
   Strength            String?               @db.VarChar(50)
   Indications         String?               @db.Text
   SideEffects         String?               @db.Text
   Contraindications   String?               @db.Text
+  SymptomsDrugAllergies String?             @db.VarChar(255)
+  TreatDrugAllergies    String?             @db.VarChar(255)
   disease_medications disease_medications[]
 }
 

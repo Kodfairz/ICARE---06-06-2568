@@ -226,6 +226,22 @@ export default function Medic_Treatment() {
         ), // แสดง id ของข้อมูลยา
       },
       {
+        header: "อาการสำหรับผู้ที่แพ้ยา",
+        cell: ({ row }) => (
+          <>
+            {row.original.medications.SymptomsDrugAllergies}
+          </>
+        ), // แสดง id ของข้อมูลยา
+      },
+      {
+        header: "วิธีการรักษาอาการแพ้ยา",
+        cell: ({ row }) => (
+          <>
+            {row.original.medications.TreatDrugAllergies}
+          </>
+        ), // แสดง id ของข้อมูลยา
+      },
+      {
         header: "จัดการ",
         cell: ({ row }) => {
           return (

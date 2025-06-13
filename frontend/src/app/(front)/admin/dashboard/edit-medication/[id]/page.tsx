@@ -16,6 +16,8 @@ export default function EditMedicationPage() {
   const [indication, setIndication] = useState("");
   const [sideEffect, setSideEffect] = useState("");
   const [contraindication, setContraindication] = useState("");
+  const [symptomsDrugAllergies, setSymptomsDrugAllergies] = useState("");
+  const [treatDrugAllergies, setTreatDrugAllergies] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -32,6 +34,8 @@ export default function EditMedicationPage() {
       setIndication(medic.Indications || "");
       setSideEffect(medic.SideEffects || "");
       setContraindication(medic.Contraindications || "");
+      setSymptomsDrugAllergies(medic.SymptomsDrugAllergies || "");
+      setTreatDrugAllergies(medic.TreatDrugAllergies || "");
     } catch (error) {
       console.log(error);
       toast.error(error.response.message || "ไม่สามารถเรียกข้อมูลได้"); // แจ้งเตือนถ้าดึงข้อมูลไม่สำเร็จ
@@ -56,6 +60,8 @@ export default function EditMedicationPage() {
         indication: indication,
         side_effect: sideEffect,
         contraindication: contraindication,
+        symptoms_drug_allergies: symptomsDrugAllergies,
+        treat_drug_allergies: treatDrugAllergies,
       });
       if (response.status === 200) {
         toast.success(response.data.message || "แก้ไขข้อมูลสำเร็จ!");
@@ -96,7 +102,6 @@ export default function EditMedicationPage() {
               placeholder="ป้อนชื่อยา"
             />
           </div>
-
           <div>
             <label
               htmlFor="genericName"
@@ -114,7 +119,6 @@ export default function EditMedicationPage() {
               placeholder="ป้อนชื่อสามัญทางยา"
             />
           </div>
-
           <div>
             <label
               htmlFor="dosageForm"
@@ -136,7 +140,6 @@ export default function EditMedicationPage() {
               <option value="ทา">ทา</option>
             </select>
           </div>
-
           <div>
             <label
               htmlFor="strength"
@@ -154,7 +157,6 @@ export default function EditMedicationPage() {
               placeholder="ขนาดโดส เช่น 500mg"
             />
           </div>
-
           <div>
             <label
               htmlFor="indication"
@@ -167,12 +169,10 @@ export default function EditMedicationPage() {
               id="indication"
               value={indication}
               onChange={(e) => setIndication(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ใช้ในกรณีใด เช่น ลดไข้, แก้ปวด"
             />
           </div>
-
           <div>
             <label
               htmlFor="sideEffect"
@@ -185,12 +185,10 @@ export default function EditMedicationPage() {
               id="sideEffect"
               value={sideEffect}
               onChange={(e) => setSideEffect(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนผลข้างเคียง"
             />
           </div>
-
           <div>
             <label
               htmlFor="contraindication"
@@ -203,12 +201,42 @@ export default function EditMedicationPage() {
               id="contraindication"
               value={contraindication}
               onChange={(e) => setContraindication(e.target.value)}
-              required
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               placeholder="ป้อนข้อห้าม"
             />
           </div>
-
+          <div>
+            <label
+              htmlFor="symptomsDrugAllergies"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              อาการสำหรับผู้ที่แพ้ยา
+            </label>
+            <input
+              type="text"
+              id="symptomsDrugAllergies"
+              value={symptomsDrugAllergies}
+              onChange={(e) => setSymptomsDrugAllergies(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนอาการสำหรับผู้ที่แพ้ยา"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="treatDrugAllergies"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              วิธีการรักษาอาการแพ้ยา
+            </label>
+            <textarea
+              id="treatDrugAllergies"
+              value={treatDrugAllergies}
+              onChange={(e) => setTreatDrugAllergies(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="ป้อนวิธีการรักษาอาการแพ้ยา"
+              rows={3}
+            />
+          </div>
           {/* ปุ่มบันทึกและยกเลิก */}
           <div className="flex gap-4">
             <button
