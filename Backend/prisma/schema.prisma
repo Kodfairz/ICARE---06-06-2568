@@ -80,7 +80,7 @@ model feedbacks {
   FeedbackText    String          @db.Text
   CreatedAt       DateTime        @default(now()) @db.Timestamp(0)
   HealthArticleID Int?
-  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Restrict, onUpdate: SetNull, map: "feedbacks_ibfk_1")
+  healtharticles  healtharticles? @relation(fields: [HealthArticleID], references: [HealthArticleID], onDelete: Cascade, onUpdate: Restrict, map: "feedbacks_ibfk_1")
 
   @@index([HealthArticleID], map: "HealthArticleID")
 }

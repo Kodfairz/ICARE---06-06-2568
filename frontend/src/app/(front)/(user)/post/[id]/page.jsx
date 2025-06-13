@@ -234,7 +234,7 @@ const PostDetail = () => {
         </div>
 
         {post?.videolibrary && (
-          <section className="mt-10 max-w-4xl mx-auto px-2 sm:px-0">
+          <section className="mt-10 mx-auto px-2 sm:px-0">
             <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5">
               วิดีโอแนะนำ
             </h3>
@@ -255,14 +255,14 @@ const PostDetail = () => {
             />
             <button
               type="submit"
-              className="bg-green-600 text-white px-8 py-3 rounded-md transition duration-300 hover:bg-green-700"
+              className="bg-green-600 text-white px-8 py-3 rounded-md transition duration-300 hover:bg-green-700 hover:cursor-pointer"
             >
               ส่ง
             </button>
           </form>
         </div>
 
-        <section className="mt-10 max-w-4xl mx-auto px-2 sm:px-0 text-gray-600 space-y-2 text-xs sm:text-sm md:text-base">
+        <section className="mt-10 mx-auto text-gray-600 space-y-2 text-xs sm:text-sm md:text-base">
           <div>
             <p className="text-sm text-gray-500">
               เผยแพร่โดย: {post?.admins?.AdminName ?? "-"}
