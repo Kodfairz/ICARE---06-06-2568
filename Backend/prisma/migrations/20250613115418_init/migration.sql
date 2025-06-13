@@ -81,7 +81,7 @@ CREATE TABLE `healtharticles` (
     `DiseaseID` INTEGER NOT NULL,
     `AdminID` INTEGER NOT NULL,
     `ImageID` INTEGER NOT NULL,
-    `VideoID` INTEGER NOT NULL,
+    `VideoID` INTEGER NULL,
     `Views` INTEGER NOT NULL,
     `CreatedAt` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `isActive` BOOLEAN NOT NULL,
@@ -107,12 +107,14 @@ CREATE TABLE `imagelibrary` (
 CREATE TABLE `medications` (
     `MedicationID` INTEGER NOT NULL AUTO_INCREMENT,
     `MedicationName` VARCHAR(255) NOT NULL,
-    `GenericName` VARCHAR(255) NULL,
-    `DosageForm` VARCHAR(50) NULL,
+    `GenericName` VARCHAR(255) NOT NULL,
+    `DosageForm` VARCHAR(100) NOT NULL,
     `Strength` VARCHAR(50) NULL,
     `Indications` TEXT NULL,
     `SideEffects` TEXT NULL,
     `Contraindications` TEXT NULL,
+    `SymptomsDrugAllergies` VARCHAR(255) NULL,
+    `TreatDrugAllergies` VARCHAR(255) NULL,
 
     PRIMARY KEY (`MedicationID`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -121,9 +123,9 @@ CREATE TABLE `medications` (
 CREATE TABLE `treatments` (
     `TreatmentID` INTEGER NOT NULL AUTO_INCREMENT,
     `TreatmentName` VARCHAR(255) NOT NULL,
-    `Description` TEXT NULL,
-    `Procedures` TEXT NULL,
-    `Duration` VARCHAR(50) NULL,
+    `Description` TEXT NOT NULL,
+    `Procedures` TEXT NOT NULL,
+    `Duration` VARCHAR(50) NOT NULL,
     `SideEffects` TEXT NULL,
     `Contraindications` TEXT NULL,
 
@@ -189,7 +191,7 @@ ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_1` FOREIGN KEY 
 ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_2` FOREIGN KEY (`ImageID`) REFERENCES `imagelibrary`(`ImageID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_3` FOREIGN KEY (`VideoID`) REFERENCES `videolibrary`(`VideoID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_3` FOREIGN KEY (`VideoID`) REFERENCES `videolibrary`(`VideoID`) ON DELETE SET NULL ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `healtharticles` ADD CONSTRAINT `healtharticles_ibfk_4` FOREIGN KEY (`AdminID`) REFERENCES `admins`(`AdminID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
