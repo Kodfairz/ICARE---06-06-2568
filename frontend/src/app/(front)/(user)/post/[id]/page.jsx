@@ -145,7 +145,7 @@ const PostDetail = () => {
                 loading="lazy"
               />
             </div>
-            <p className="mb-4 text-xs text-center text-gray-400 italic">ที่มา: <a href={post.imagelibrary.Credit} className="hover:underline">{post.imagelibrary.Credit}</a></p>
+            <p className="mb-4 text-xs text-center text-gray-400 italic">ที่มา: <a href={post.imagelibrary.Credit} className="hover:underline" target="_blank">{post.imagelibrary.Credit}</a></p>
           </>
         )}
 
