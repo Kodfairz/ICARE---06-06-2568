@@ -90,7 +90,7 @@ model healtharticles {
   DiseaseID       Int
   AdminID         Int
   ImageID         Int
-  VideoID         Int
+  VideoID         Int?
   Views           Int
   CreatedAt       DateTime       @default(now()) @db.Timestamp(0)
   isActive        Boolean
@@ -98,7 +98,7 @@ model healtharticles {
   feedbacks       feedbacks[]
   diseases        diseases       @relation(fields: [DiseaseID], references: [DiseaseID], onDelete: Cascade, onUpdate: Restrict, map: "healtharticles_ibfk_1")
   imagelibrary    imagelibrary   @relation(fields: [ImageID], references: [ImageID], onUpdate: Restrict, map: "healtharticles_ibfk_2")
-  videolibrary    videolibrary   @relation(fields: [VideoID], references: [VideoID], onUpdate: Restrict, map: "healtharticles_ibfk_3")
+  videolibrary    videolibrary?   @relation(fields: [VideoID], references: [VideoID], onUpdate: Restrict, map: "healtharticles_ibfk_3")
   admins          admins         @relation(fields: [AdminID], references: [AdminID], onUpdate: Restrict, map: "healtharticles_ibfk_4")
 
   @@index([AdminID], map: "AdminID")

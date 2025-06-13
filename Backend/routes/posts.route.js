@@ -52,7 +52,7 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
                 DiseaseID : newDisease.DiseaseID,
                 AdminID : Number(body.admin_id),
                 ImageID : Number(body.image_id),
-                VideoID : Number(body.video_id),
+                VideoID : body.video_id ? Number(body.video_id) : null,
                 Views : 0,
                 isActive : body.isActive,
             }

@@ -459,7 +459,6 @@ export default function AddPostPage() {
               placeholder="เลือกวิดีโอแนะนำ"
               classNamePrefix="react-select"
               className="w-full"
-              isClearable
             />
           </div>
 
