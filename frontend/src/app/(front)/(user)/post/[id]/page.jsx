@@ -136,6 +136,8 @@ const PostDetail = () => {
         </h1>
         <h2 className="text-base sm:text-lg text-indigo-600 font-semibold mb-6 break-words">
           {post?.diseases.categories ? `ประเภทข้อมูล: ${post.diseases.categories.CategoryName}` : "ประเภทข้อมูล: -"}
+          <br/>
+          {post?.diseases?.ICD10_Code ? `รหัสโรค : ${post.diseases.ICD10_Code}` : "รหัสโรค : -"}
         </h2>
 
         {post?.imagelibrary && (
