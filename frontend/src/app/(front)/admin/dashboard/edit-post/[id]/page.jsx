@@ -29,7 +29,7 @@ export default function EditPostPage() {
   const [category, setCategory] = useState(null);
   const [imageId, setImageId] = useState(null);
   const [videoId, setVideoId] = useState(null);
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState(null);
   const [icd10Code, setIcd10Code] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [publishStatus, setPublishStatus] = useState(true);
@@ -96,8 +96,8 @@ export default function EditPostPage() {
         setDescription(post.diseases.Description);
         setCategory(post.diseases.CategoryID);
         setImageId(post.ImageID);
-        setVideoId(post.VideoID);
-        setVideoUrl(post.videolibrary.VideoURL);
+        setVideoId(post?.VideoID);
+        setVideoUrl(post.videolibrary?.VideoURL);
         setIcd10Code(post.diseases.ICD10_Code);
         setPublishStatus(post.isActive);
 
@@ -110,6 +110,7 @@ export default function EditPostPage() {
         setImages(imgRes.data.resultData);
         setVideos(vidRes.data.resultData);
       } catch (err) {
+        console.error(err);
         toast.error("โหลดข้อมูลไม่สำเร็จ");
       }
     };
